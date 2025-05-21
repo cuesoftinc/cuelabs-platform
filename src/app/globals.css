@@ -145,11 +145,11 @@
   }
 
   .floating-badge {
-    @apply bg-black border border-float-badge-border rounded-full py-3 px-6 text-white text-16c leading-[100%] font-bold uppercase absolute;
+    @apply bg-black border border-float-badge-border rounded-full p-2 lg:py-3 lg:px-6 text-white text-xs lg:text-16c lg:leading-[100%] font-bold uppercase absolute;
   }
 
   .featured-project {
-    @apply w-[48%] bg-black border border-featured-projects-border rounded-[20px] p-5 text-white text-16c leading-[100%] font-bold;
+    @apply w-full lg:w-[48%] max-w-[628px] bg-black border border-featured-projects-border rounded-[20px] p-3 md:p-5 text-white text-16c leading-[100%] font-bold;
   }
 
   .featured-tool {
@@ -178,4 +178,8 @@
   );
   color: transparent;
   background-clip: text !important;
+}
+
+.gradient-bg-benefits {
+  background-color: linear-gradient(309.07deg, #050505 0%, #0c0c0c 100%);
 }

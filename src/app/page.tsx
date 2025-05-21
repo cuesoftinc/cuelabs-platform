@@ -1,71 +1,72 @@
 import Image from 'next/image';
 
-import NavBar from '@/components/custom/navigation/navbar';
+import logo from '@/svgs/cuesoft-logo.svg';
+import fb from '@/svgs/fb-full.svg';
+import x from '@/svgs/x-full.svg';
+import ig from '@/svgs/ig-full.svg';
+import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-
-import btnIcon from '@/svgs/cta-arrow.svg';
-import heroImgFront from '@/images/hero-img-front.webp';
-import heroImgBack from '@/images/hero-img-back.webp';
-import cueCurrency from '@/svgs/cue-currency.svg';
-
-export default function Home() {
+function Footer() {
   return (
-    <div className='w-full font-fustat'>
-      <NavBar />
+    <footer className=' bg-[#050505] py-[4rem] mt-[5rem]'>
+      <div className='w-[80%] mx-auto flex flex-col gap-14 lg:gap-0 lg:flex-row justify-between'>
+        <div className='flex flex-col gap-5'>
+          <Image src={logo} alt='cuesoft logo' width={149} height={32} />
 
-      <main className='w-full bg-yellow-50'>
-        <section className='h-screen bg-[url("/svgs/hero-bg.svg")] flex items-center justify-center bg-cover bg-no-repeat'>
-          <div className='w-[74.2%] mx-auto flex items-center justify-between'>
-            <div className='w-[53%] relative flex items-center justify-end'>
-              <Image
-                src={heroImgFront}
-                alt='Hero Image Front'
-                className='w-[500px] h-[520px] absolute -top-8 left-0'
-              />
+          <p className='text-lg leading-[27px] text-[#555555]'>
+            Ai innovation for global impact
+          </p>
 
-              <Image
-                src={heroImgBack}
-                alt='Hero Image Back'
-                className='w-[440px] h-[460px]'
-              />
+          <div className='flex gap-4 items-center'>
+            <Link href='https://facebook.com/cuesoft' target='_blank'>
+              <Image src={fb} alt='facebook logo' className='' />
+            </Link>
 
-              <Image
-                src={cueCurrency}
-                alt='Cue Currency'
-                className='absolute -bottom-1/3 right-1/3'
-              />
+            <Link href='https://x.com/cuesoftinc' target='_blank'>
+              <Image src={x} alt='x logo' className='' />
+            </Link>
 
-              <div className='floating-badge -left-1/12 bottom-1/5'>
-                Redeem Now
-              </div>
-
-              <div className='floating-badge -right-1/12 bottom-2/5 rotate-[18deg]'>
-                Cool Gadgets
-              </div>
-            </div>
-
-            <div className='w-[40%]'>
-              <h1 className='capitalize text-[56px] leading-[72.8px] font-extrabold'>
-                Contribute to open-source AI
-              </h1>
-
-              <p className='text-[40px] leading-[59.8px] font-extrabold capitalize gradient-bg mt-4'>
-                earn cue points, And redeem awesome gadgets!
-              </p>
-
-              <div className='flex gap-6 items-center mt-6 w-full'>
-                <Button className='btn-secondary'>Sign Up</Button>
-
-                <Button variant={'default'} className='btn-main'>
-                  Join Our Community
-                  <Image src={btnIcon} alt='Arrow Icon' />
-                </Button>
-              </div>
-            </div>
+            <Link href='https://instagram.com/cuesoftinc' target='_blank'>
+              <Image src={ig} alt='instagram logo' className='' />
+            </Link>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+
+        <div className='flex justify-between md:w-[60%] lg:w-[40%] xl:w-[30%]'>
+          <ul className='flex flex-col gap-5 text-[#555555] text-lg leading-[27px]'>
+            <li className='text-[19.53px] text-white leading-[27px] font-bold'>
+              Pages
+            </li>
+            <li className=''>
+              <a href='#home'>Home</a>
+            </li>
+            <li className=''>Dashboard</li>
+            <li className=''>
+              <a href='#projects'>Projects</a>
+            </li>
+            <li className=''>Marketplace</li>
+          </ul>
+
+          <ul className='flex flex-col gap-5 text-[#555555] text-lg leading-[27px]'>
+            <li className='text-[19.53px] text-white leading-[27px] font-bold'>
+              Other
+            </li>
+            <li className=''>
+              <a href='https://privacy.cuesoft.io' target='_blank'>
+                Privacy Policy
+              </a>
+            </li>
+            <li className=''>
+              <a href='https://terms.cuesoft.io' target='_blank'>
+                Terms of service
+              </a>
+            </li>
+            <li className=''>Contact</li>
+          </ul>
+        </div>
+      </div>
+    </footer>
   );
 }
+
+export default Footer;

@@ -20,8 +20,7 @@ const fustat = Fustat({
 export const metadata = {
   metadataBase: new URL('https://cuelabs.cuesoft.io'),
   title: 'CueLABS™ | Cuesoft Developer Labs',
-  description:
-    'Unlock the power of AI-driven educational tools tailored for African learners.',
+  description: 'AI Innovation for Global Impact',
   applicationName: 'CueLABS™',
   keywords: [
     'AI',

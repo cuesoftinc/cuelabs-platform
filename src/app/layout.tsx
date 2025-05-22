@@ -65,8 +65,7 @@ export const metadata = {
     type: 'website',
     url: 'https://cuelabs.cuesoft.io',
     title: 'CueLABS™ | Cuesoft Developer Labs',
-    description:
-      'Unlock the power of AI-driven educational tools tailored for African learners.',
+    description: 'AI Innovation for Global Impact',
     siteName: 'CueLABS™',
     images: [
       {

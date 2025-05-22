@@ -19,7 +19,7 @@ import leaderboards from '@/images/leaderboards.webp';
 import apparule from '@/images/apparule.webp';
 import storefront from '@/images/storefront.webp';
 import upstat from '@/images/upstat.webp';
-import expendit from '@/images/upstat-e.webp';
+import expendit from '@/images/expendit.webp';
 import shirt from '@/images/shirt.webp';
 import iwatch from '@/images/iwatch.webp';
 import ipad from '@/images/ipad.webp';
@@ -143,10 +143,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section id='product' className='mt-10 lg:mt-32 w-full'>
+        <section id='platform' className='mt-10 lg:mt-32 w-full'>
           <div className='w-[90%] xl:w-[45%] mx-auto text-center'>
             <h2 className='text-3xl md:text-4xl lg:text-[56px] lg:leading-[72.8px] font-extrabold capitalize'>
-              Product Walkthrough
+              Platform Walkthrough
             </h2>
             <p className='text-sm md:text-lg md:leading-[27px] w-[90%] mx-auto'>
               Explore a selection of top AI projects that showcase innovation,
@@ -301,7 +301,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id='community' className='mt-10 lg:mt-32 w-full'>
+        <section id='marketplace' className='mt-10 lg:mt-32 w-full'>
           <div className='w-[90%] xl:w-[51%] mx-auto text-center'>
             <h2 className='text-3xl md:text-4xl lg:text-[56px] lg:leading-[72.8px] font-extrabold capitalize'>
               Community Benefits

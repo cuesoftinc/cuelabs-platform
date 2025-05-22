@@ -9,22 +9,23 @@ import logo from '@/svgs/cuesoft-logo.svg';
 import btnIcon from '@/svgs/cta-arrow.svg';
 
 import { Menu } from 'lucide-react';
+import Link from 'next/link';
 
 const navLinks = [
   {
-    url: '/',
+    url: '#home',
     name: 'Home',
   },
   {
-    url: '/dashboard',
-    name: 'Dashboard',
+    url: '#platform',
+    name: 'Platform',
   },
   {
-    url: '/projects',
+    url: '#projects',
     name: 'Projects',
   },
   {
-    url: '/marketplace',
+    url: '#marketplace',
     name: 'Marketplace',
   },
 ];
@@ -59,12 +60,14 @@ function NavBar() {
 
       <ul className='text-16c font-semibold leading-[16px] hidden lg:flex items-center gap-8'>
         {navLinks.map((link, index) => (
-          <li
-            key={index}
-            className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
-          >
-            {link.name}
-          </li>
+          <Link href={link.url} key={index}>
+            <li
+              // key={index}
+              className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
+            >
+              {link.name}
+            </li>
+          </Link>
         ))}
       </ul>
 
@@ -86,12 +89,14 @@ function NavBar() {
         >
           <ul className='flex flex-col items-center gap-6'>
             {navLinks.map((link, index) => (
-              <li
-                key={index}
-                className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
-              >
-                {link.name}
-              </li>
+              <Link href={link.url} key={index}>
+                <li
+                  // key={index}
+                  className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
+                >
+                  {link.name}
+                </li>
+              </Link>
             ))}
           </ul>
 

@@ -19,7 +19,7 @@ import leaderboards from '@/images/leaderboards.webp';
 import apparule from '@/images/apparule.webp';
 import storefront from '@/images/storefront.webp';
 import upstat from '@/images/upstat.webp';
-import expendit from '@/images/upstat-e.webp';
+import expendit from '@/images/expendit.webp';
 import shirt from '@/images/shirt.webp';
 import iwatch from '@/images/iwatch.webp';
 import ipad from '@/images/ipad.webp';

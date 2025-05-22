@@ -1,10 +1,11 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import logo from '@/svgs/cuesoft-logo.svg';
 import fb from '@/svgs/fb-full.svg';
 import x from '@/svgs/x-full.svg';
 import ig from '@/svgs/ig-full.svg';
-import Link from 'next/link';
+import ln from '@/svgs/ln-full.svg';
 
 function Footer() {
   return (
@@ -28,6 +29,10 @@ function Footer() {
 
             <Link href='https://instagram.com/cuesoftinc' target='_blank'>
               <Image src={ig} alt='instagram logo' className='' />
+            </Link>
+
+            <Link href='https://linkedin.com/company/cuesoft' target='_blank'>
+              <Image src={ln} alt='linkedin logo' className='' />
             </Link>
           </div>
         </div>

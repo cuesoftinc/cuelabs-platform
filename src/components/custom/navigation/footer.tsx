@@ -15,7 +15,7 @@ function Footer() {
           <Image src={logo} alt='cuesoft logo' width={149} height={32} />
 
           <p className='text-lg leading-[27px] text-[#555555]'>
-            AI for Global Impact
+            AI Innovation for Global Impact
           </p>
 
           <div className='flex gap-4 items-center'>

@@ -2,6 +2,9 @@
 import { Geist, Geist_Mono, Fustat } from 'next/font/google';
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -20,7 +23,8 @@ const fustat = Fustat({
 export const metadata = {
   metadataBase: new URL('https://cuelabs.cuesoft.io'),
   title: 'CueLABS™ | Cuesoft Developer Labs',
-  description: 'AI Innovation for Global Impact',
+  description:
+    'AI Innovation for Global Impact',
   applicationName: 'CueLABS™',
   keywords: [
     'AI',
@@ -64,7 +68,8 @@ export const metadata = {
     type: 'website',
     url: 'https://cuelabs.cuesoft.io',
     title: 'CueLABS™ | Cuesoft Developer Labs',
-    description: 'AI Innovation for Global Impact',
+    description:
+      'AI Innovation for Global Impact',
     siteName: 'CueLABS™',
     images: [
       {
@@ -101,6 +106,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen max-w-[1440px] mx-auto bg-darkmode-bg text-white`}
       >
         {children}
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -1,9 +1,20 @@
+'use client';
+
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 import NavBar from '@/components/custom/navigation/navbar';
 import Footer from '@/components/custom/navigation/footer';
 
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { ArrowUpRight } from 'lucide-react';
 
 import btnIcon from '@/svgs/cta-arrow.svg';
@@ -29,31 +40,67 @@ import flask from '@/images/flask.webp';
 import collab from '@/images/collab.webp';
 import projectImg from '@/images/projects.webp';
 
+import { IoLogoCss3 } from 'react-icons/io5';
+import { FaGolang } from 'react-icons/fa6';
+import { FaSquareJs } from 'react-icons/fa6';
+import { BiLogoTypescript } from 'react-icons/bi';
+import { FaDocker } from 'react-icons/fa';
+import { FaDartLang } from 'react-icons/fa6';
+import JoinWaitlist from '@/components/custom/join-waitlist';
+
 export default function Home() {
+  const [openWaitlistDialog, setOpenWaitlistDialog] = useState(false);
+
   const projects = [
     {
       img: apparule,
       name: 'Apparule',
       description:
         'Elevate your Fashion Design with Augmented Reality. Unlock the future of fashion measurement with Apparule and get the perfect fit every time.',
+      url: 'https://github.com/cuesoftinc/apparule',
+      tools: [
+        { name: 'Dart', icon: <FaDartLang /> },
+        { name: 'Go', icon: <FaGolang /> },
+      ],
     },
     {
       img: upstat,
       name: 'Upstat',
       description:
         'Elevate your Fashion Design with Augmented Reality. Unlock the future of fashion measurement with Apparule and get the perfect fit every time.',
+      url: 'https://github.com/cuesoftinc/upstat',
+      tools: [
+        { name: 'Javascript', icon: <FaSquareJs /> },
+        { name: 'Typescript', icon: <BiLogoTypescript /> },
+        { name: 'CSS', icon: <IoLogoCss3 /> },
+        { name: 'Go', icon: <FaGolang /> },
+      ],
     },
     {
       img: storefront,
       name: 'Storefront',
       description:
         'Elevate your Fashion Design with Augmented Reality. Unlock the future of fashion measurement with Apparule and get the perfect fit every time.',
+      url: 'https://github.com/cuesoftinc/storefront',
+      tools: [
+        { name: 'Typescript', icon: <BiLogoTypescript /> },
+        { name: 'CSS', icon: <IoLogoCss3 /> },
+        { name: 'Go', icon: <FaGolang /> },
+      ],
     },
     {
       img: expendit,
       name: 'Expendit',
       description:
         'Elevate your Fashion Design with Augmented Reality. Unlock the future of fashion measurement with Apparule and get the perfect fit every time.',
+      url: 'https://github.com/cuesoftinc/expendit',
+      tools: [
+        { name: 'Typescript', icon: <BiLogoTypescript /> },
+        { name: 'CSS', icon: <IoLogoCss3 /> },
+        { name: 'Go', icon: <FaGolang /> },
+        { name: 'Docker', icon: <FaDocker /> },
+        { name: 'Javascript', icon: <FaSquareJs /> },
+      ],
     },
   ];
 
@@ -86,7 +133,18 @@ export default function Home() {
 
   return (
     <div className='w-full font-fustat'>
-      <NavBar />
+      <NavBar setOpen={setOpenWaitlistDialog} />
+
+      <Dialog open={openWaitlistDialog} onOpenChange={setOpenWaitlistDialog}>
+        <DialogContent className='max-w-[100vw] h-fit w-[90vw] bg-[#0e0e0e] border border-[#2e2e2e]'>
+          <DialogHeader className='h-fit'>
+            <DialogTitle className='h-fit'>Join our waitlist</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+
+          <JoinWaitlist />
+        </DialogContent>
+      </Dialog>
 
       <main className='w-full'>
         <section
@@ -132,12 +190,19 @@ export default function Home() {
               </p>
 
               <div className='flex gap-6 justify-center md:justify-start items-center mt-6 w-full '>
-                <Button className='btn-secondary'>Sign Up</Button>
-
-                <Button variant={'default'} className='btn-main'>
-                  Join Our Community
-                  <Image src={btnIcon} alt='Arrow Icon' />
+                <Button
+                  className='btn-secondary'
+                  onClick={() => setOpenWaitlistDialog(true)}
+                >
+                  Get Started
                 </Button>
+
+                <Link href='https://discord.gg/CDfZxxrxbb' target='_blank'>
+                  <Button variant={'default'} className='btn-main'>
+                    Join Our Community
+                    <Image src={btnIcon} alt='Arrow Icon' />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -266,14 +331,14 @@ export default function Home() {
             </p>
           </div>
 
-          <div className='w-[90%] xl:w-[87.2%] mx-auto flex flex-col lg:flex-row flex-wrap items-center justify-between gap-y-[3rem] mt-[3rem] lg:mt-[6rem]'>
+          <div className='w-[90%] xl:w-[87.2%] mx-auto flex flex-col lg:flex-row flex-wrap items-stretch justify-between gap-y-[3rem] mt-[3rem] lg:mt-[6rem]'>
             {projects.map((project, index) => (
               <div key={index} className='featured-project'>
                 <div className='h-[222px] rounded-[10px]'>
                   <Image
                     src={project.img}
                     alt={project.name}
-                    className='w-full h-full'
+                    className='w-full h-[180px] md:h-[222px] max-h-[222px]'
                   />
                 </div>
 
@@ -287,14 +352,21 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className='flex items-center justify-between mt-4'>
-                  <div className='flex items-center gap-4'>
-                    <div className='featured-tool'>Tensorflow</div>
+                <div className='flex items-end justify-between mt-4 self-end'>
+                  <div className='w-[75%] flex items-center flex-wrap gap-2'>
+                    {project.tools.map((tool, index) => (
+                      <div key={index} className='featured-tool flex gap-1'>
+                        {tool.icon}
+                        <p>{tool.name}</p>
+                      </div>
+                    ))}
                   </div>
 
-                  <p className='text-[#6481F1] flex items-center gap-1 text-sm md:text-16c font-medium'>
-                    Github <ArrowUpRight />
-                  </p>
+                  <Link href={project.url} target='_blank'>
+                    <p className='text-[#6481F1] flex items-center gap-1 text-sm md:text-16c font-medium'>
+                      Github <ArrowUpRight />
+                    </p>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -348,10 +420,12 @@ export default function Home() {
             </div>
 
             <div className='flex items-center justify-center mt-5 md:mt-10'>
-              <Button variant={'default'} className='btn-main'>
-                Visit Marketplace
-                <Image src={btnIcon} alt='Arrow Icon' />
-              </Button>
+              <Link href='https://discord.gg/CDfZxxrxbb' target='_blank'>
+                <Button variant={'default'} className='btn-main'>
+                  Visit Marketplace
+                  <Image src={btnIcon} alt='Arrow Icon' />
+                </Button>
+              </Link>
             </div>
           </div>
 

@@ -2,6 +2,9 @@
 import { Geist, Geist_Mono, Fustat } from 'next/font/google';
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -103,6 +106,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen max-w-[1440px] mx-auto bg-darkmode-bg text-white`}
       >
         {children}
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

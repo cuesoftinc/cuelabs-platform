@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +30,11 @@ const navLinks = [
   },
 ];
 
-function NavBar() {
+type NavBarProps = {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function NavBar({ setOpen }: NavBarProps) {
   const [openMenu, setOpenMenu] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -54,11 +58,19 @@ function NavBar() {
   //   setOpenMenu((prev) => !prev);
   // };
 
+  const handleButtonClick = () => {
+    setOpenMenu(false);
+    setOpen(true);
+  };
+
   return (
     <nav className='mx-auto h-[82px] w-[90%] lg:w-[87.2%] flex items-center justify-between relative'>
       <Image src={logo} alt='Cuesoft Logo' className='w-[213.7px] h-[42px]' />
 
-      <ul className='text-16c font-semibold leading-[16px] hidden lg:flex items-center gap-8'>
+      <ul
+        className='text-16c font-semibold leading-[16px] hidden lg:flex items-center gap-8'
+        onClick={() => setOpenMenu(false)}
+      >
         {navLinks.map((link, index) => (
           <Link href={link.url} key={index}>
             <li
@@ -71,7 +83,11 @@ function NavBar() {
         ))}
       </ul>
 
-      <Button variant={'default'} className='btn-main hidden lg:flex'>
+      <Button
+        variant={'default'}
+        className='btn-main hidden lg:flex'
+        onClick={handleButtonClick}
+      >
         Get Started
         <Image src={btnIcon} alt='Arrow Icon' />
       </Button>
@@ -87,7 +103,10 @@ function NavBar() {
           className='flex flex-col items-center gap-8 p-6 bg-[#16151d] rounded-lg shadow-lg absolute w-full text-center z-10 top-20'
           onClick={() => setOpenMenu(false)}
         >
-          <ul className='flex flex-col items-center gap-6'>
+          <ul
+            className='flex flex-col items-center gap-6'
+            onClick={() => setOpenMenu(false)}
+          >
             {navLinks.map((link, index) => (
               <Link href={link.url} key={index}>
                 <li
@@ -100,7 +119,11 @@ function NavBar() {
             ))}
           </ul>
 
-          <Button variant={'default'} className='btn-main w-full'>
+          <Button
+            variant={'default'}
+            className='btn-main w-full'
+            onClick={handleButtonClick}
+          >
             Get Started
             <Image src={btnIcon} alt='Arrow Icon' />
           </Button>

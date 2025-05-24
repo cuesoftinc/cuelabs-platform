@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Link from 'next/link';
 
 import logo from '@/svgs/cuesoft-logo.svg';
 import fb from '@/svgs/fb-full.svg';

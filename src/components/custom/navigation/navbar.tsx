@@ -64,71 +64,73 @@ function NavBar({ setOpen }: NavBarProps) {
   };
 
   return (
-    <nav className='mx-auto h-[82px] w-[90%] lg:w-[87.2%] flex items-center justify-between relative'>
-      <Image src={logo} alt='Cuesoft Logo' className='w-[213.7px] h-[42px]' />
+    <nav className='fixed w-full z-10 shadow-lg bg-product-walkthrough-bg'>
+      <div className='mx-auto h-[82px] w-[90%] lg:w-[87.2%] flex items-center justify-between relative'>
+        <Image src={logo} alt='Cuesoft Logo' className='w-[213.7px] h-[42px]' />
 
-      <ul
-        className='text-16c font-semibold leading-[16px] hidden lg:flex items-center gap-8'
-        onClick={() => setOpenMenu(false)}
-      >
-        {navLinks.map((link, index) => (
-          <Link href={link.url} key={index}>
-            <li
-              // key={index}
-              className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
-            >
-              {link.name}
-            </li>
-          </Link>
-        ))}
-      </ul>
-
-      <Button
-        variant={'default'}
-        className='btn-main hidden lg:flex'
-        onClick={handleButtonClick}
-      >
-        Get Started
-        <Image src={btnIcon} alt='Arrow Icon' />
-      </Button>
-
-      <Menu
-        className='block lg:hidden cursor-pointer'
-        onClick={() => setOpenMenu((prev) => !prev)}
-      />
-
-      {openMenu === true && (
-        <div
-          ref={menuRef}
-          className='flex flex-col items-center gap-8 p-6 bg-[#16151d] rounded-lg shadow-lg absolute w-full text-center z-10 top-20'
+        <ul
+          className='text-16c font-semibold leading-[16px] hidden lg:flex items-center gap-8'
           onClick={() => setOpenMenu(false)}
         >
-          <ul
-            className='flex flex-col items-center gap-6'
+          {navLinks.map((link, index) => (
+            <Link href={link.url} key={index}>
+              <li
+                // key={index}
+                className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
+              >
+                {link.name}
+              </li>
+            </Link>
+          ))}
+        </ul>
+
+        <Button
+          variant={'default'}
+          className='btn-main hidden lg:flex'
+          onClick={handleButtonClick}
+        >
+          Get Started
+          <Image src={btnIcon} alt='Arrow Icon' />
+        </Button>
+
+        <Menu
+          className='block lg:hidden cursor-pointer'
+          onClick={() => setOpenMenu((prev) => !prev)}
+        />
+
+        {openMenu === true && (
+          <div
+            ref={menuRef}
+            className='flex flex-col items-center gap-8 p-6 bg-[#16151d] rounded-lg shadow-lg absolute w-full text-center z-10 top-20'
             onClick={() => setOpenMenu(false)}
           >
-            {navLinks.map((link, index) => (
-              <Link href={link.url} key={index}>
-                <li
-                  // key={index}
-                  className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
-                >
-                  {link.name}
-                </li>
-              </Link>
-            ))}
-          </ul>
+            <ul
+              className='flex flex-col items-center gap-6'
+              onClick={() => setOpenMenu(false)}
+            >
+              {navLinks.map((link, index) => (
+                <Link href={link.url} key={index}>
+                  <li
+                    // key={index}
+                    className='hover:border-b-[#CB39C1] pb-1.5 pt-1 border-2 border-transparent cursor-pointer'
+                  >
+                    {link.name}
+                  </li>
+                </Link>
+              ))}
+            </ul>
 
-          <Button
-            variant={'default'}
-            className='btn-main w-full'
-            onClick={handleButtonClick}
-          >
-            Get Started
-            <Image src={btnIcon} alt='Arrow Icon' />
-          </Button>
-        </div>
-      )}
+            <Button
+              variant={'default'}
+              className='btn-main w-full'
+              onClick={handleButtonClick}
+            >
+              Get Started
+              <Image src={btnIcon} alt='Arrow Icon' />
+            </Button>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

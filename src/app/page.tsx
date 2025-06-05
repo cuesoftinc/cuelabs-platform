@@ -171,13 +171,17 @@ export default function Home() {
                 className='absolute right-0 -bottom-[2rem] md:-bottom-1/3 md:right-1/3'
               />
 
-              <div className='floating-badge left-0 lg:-left-1/12 lg:bottom-1/5'>
-                Redeem Now
-              </div>
+              <Link href='#marketplace'>
+                <div className='floating-badge left-0 lg:-left-1/12 lg:bottom-1/5'>
+                  Redeem Now
+                </div>
+              </Link>
 
-              <div className='floating-badge right-0 lg:-right-1/12 lg:bottom-2/5 rotate-[18deg]'>
-                Cool Gadgets
-              </div>
+              <Link href='#marketplace'>
+                <div className='floating-badge right-0 lg:-right-1/12 lg:bottom-2/5 rotate-[18deg]'>
+                  Cool Gadgets
+                </div>
+              </Link>
             </div>
 
             <div className='w-full md:w-[55%] lg:w-[40%] text-center md:text-left'>
@@ -232,13 +236,17 @@ export default function Home() {
                 className='absolute bottom-[12rem] right-0 md:bottom-0 md:right-[1rem] lg:bottom-[18rem] xl:bottom-[24rem] xl:right-[10rem]'
               />
 
-              <div className='floating-badge right-0 md:top-[18rem] md:right-[2rem] lg:top-[23rem]  xl:top-[19rem] xl:right-[4rem] rotate-[18deg]'>
-                Rewards!
-              </div>
+              <Link href='#marketplace'>
+                <div className='floating-badge right-0 md:top-[18rem] md:right-[2rem] lg:top-[23rem]  xl:top-[19rem] xl:right-[4rem] rotate-[18deg]'>
+                  Rewards!
+                </div>
+              </Link>
 
-              <div className='floating-badge bottom-[30rem] md:left-[2rem] md:bottom-[20rem] lg:bottom-[25rem] xl:left-[6rem] xl:bottom-[40rem] rotate-[-18deg]'>
-                Redeem
-              </div>
+              <Link href='#marketplace'>
+                <div className='floating-badge bottom-[30rem] md:left-[2rem] md:bottom-[20rem] lg:bottom-[25rem] xl:left-[6rem] xl:bottom-[40rem] rotate-[-18deg]'>
+                  Redeem
+                </div>
+              </Link>
 
               <div className='bg-product-walkthrough-bg border border-product-walkthrough-border rounded-4xl w-[85%] xl:w-[65%] p-6 lg:p-14 mx-auto'>
                 <div className='flex flex-col gap-5 md:gap-0 md:flex-row items-center justify-between border-b  border-b-product-item-border pb-14'>

@@ -1,5 +1,6 @@
 // import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Fustat } from 'next/font/google';
+import Script from "next/script";
 import './globals.css';
 
 import { Analytics } from '@vercel/analytics/next';
@@ -100,6 +101,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <Script
+        src="/meta-pixel.js"
+        strategy="lazyOnload"
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen mx-auto bg-darkmode-bg text-white`}
       >

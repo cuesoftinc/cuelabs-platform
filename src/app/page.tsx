@@ -146,7 +146,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <main className='w-full'>
+      <main className='w-full max-w-[1440px] mx-auto'>
         <section
           id='home'
           className='h-screen bg-[url("/svgs/hero-bg.svg")] flex items-center justify-center bg-cover bg-no-repeat md:my-0'

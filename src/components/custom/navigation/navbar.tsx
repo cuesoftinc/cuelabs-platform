@@ -65,7 +65,7 @@ function NavBar({ setOpen }: NavBarProps) {
 
   return (
     <nav className='fixed w-full z-10 shadow-lg bg-product-walkthrough-bg'>
-      <div className='mx-auto h-[82px] w-[90%] lg:w-[87.2%] flex items-center justify-between relative'>
+      <div className='mx-auto max-w-[1440px] h-[82px] w-[90%] lg:w-[87.2%] flex items-center justify-between relative'>
         <Image src={logo} alt='Cuesoft Logo' className='w-[213.7px] h-[42px]' />
 
         <ul

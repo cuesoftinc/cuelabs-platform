@@ -23,8 +23,7 @@ const fustat = Fustat({
 export const metadata = {
   metadataBase: new URL('https://cuelabs.cuesoft.io'),
   title: 'CueLABS™ | Cuesoft Developer Labs',
-  description:
-    'AI Innovation for Global Impact',
+  description: 'AI Innovation for Global Impact',
   applicationName: 'CueLABS™',
   keywords: [
     'AI',
@@ -68,8 +67,7 @@ export const metadata = {
     type: 'website',
     url: 'https://cuelabs.cuesoft.io',
     title: 'CueLABS™ | Cuesoft Developer Labs',
-    description:
-      'AI Innovation for Global Impact',
+    description: 'AI Innovation for Global Impact',
     siteName: 'CueLABS™',
     images: [
       {
@@ -103,7 +101,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen max-w-[1440px] mx-auto bg-darkmode-bg text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen mx-auto bg-darkmode-bg text-white`}
       >
         {children}
 

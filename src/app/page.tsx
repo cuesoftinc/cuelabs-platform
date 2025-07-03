@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import NavBar from '@/components/custom/navigation/navbar';
 import Footer from '@/components/custom/navigation/footer';
@@ -50,6 +51,8 @@ import JoinWaitlist from '@/components/custom/join-waitlist';
 
 export default function Home() {
   const [openWaitlistDialog, setOpenWaitlistDialog] = useState(false);
+
+  const router = useRouter();
 
   const projects = [
     {
@@ -196,7 +199,8 @@ export default function Home() {
               <div className='flex gap-6 justify-center md:justify-start items-center mt-6 w-full '>
                 <Button
                   className='btn-secondary'
-                  onClick={() => setOpenWaitlistDialog(true)}
+                  // onClick={() => setOpenWaitlistDialog(true)}
+                  onClick={() => router.push('/platform/auth/login')}
                 >
                   Get Started
                 </Button>

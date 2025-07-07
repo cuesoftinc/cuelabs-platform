@@ -1,10 +1,7 @@
 // import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Fustat } from 'next/font/google';
-import Script from "next/script";
+import Script from 'next/script';
 import './globals.css';
-
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -101,17 +98,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <Script
-        src="/meta-pixel.js"
-        strategy="lazyOnload"
-      />
+      <Script src='https://www.googletagmanager.com/gtag/js?id=G-JBJ1KKEJ9N' />
+      <Script src='/google-tag.js' strategy='lazyOnload' />
+      <Script src='/meta-pixel.js' strategy='lazyOnload' />
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fustat.variable} antialiased w-screen mx-auto bg-darkmode-bg text-white`}
       >
+        {/* <!-- Google Tag Manager (noscript) --> */}
+        <noscript>
+          <iframe
+            src='https://www.googletagmanager.com/ns.html?id=GTM-P4MC5P8T'
+            height='0'
+            width='0'
+            style={{ display: 'none', visibility: 'hidden' }}
+          ></iframe>
+        </noscript>
+        {/* <!-- End Google Tag Manager (noscript) --> */}
         {children}
-
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

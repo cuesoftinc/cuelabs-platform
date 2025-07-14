@@ -11,7 +11,7 @@ import projectLogo from '@/svgs/project-logo.svg';
 
 function ProjectCard() {
   return (
-    <Card className='card-container p-0 w-[33%] max-w-[329px] gap-0'>
+    <Card className='card-container p-0 w-full max-w-[329px] gap-0'>
       <CardContent className='p-5'>
         <div className='flex items-center justify-between'>
           <div>

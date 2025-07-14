@@ -1,10 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
 
-import { ArrowDown, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowDown, ArrowUpRight } from 'lucide-react';
 
 import { PiTimerFill } from 'react-icons/pi';
-import { PiCalendarBlankFill } from 'react-icons/pi';
 import { IoIosStar } from 'react-icons/io';
 
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,9 @@ import ProjectCard from '@/components/custom/dashboard/project-card';
 
 import cueCurrency from '@/svgs/cue-currency-dashboard.svg';
 import chart from '@/svgs/overview-chart.svg';
+import LeaderboardTable from '@/components/custom/dashboard/leaderboard-table';
+import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
+import { PiCalendarBlankFill } from 'react-icons/pi';
 
 function DashboardPage() {
   return (
@@ -58,19 +60,18 @@ function DashboardPage() {
               />
               <span className='text-white text-2xl font-semibold'>18,400</span>
 
-              <div className='border-[0.6px] border-[#05C16833] rounded-[4px] px-1 py-0.5 text-[10px] text-[#14CA74] flex items-center bg-[#05C16833]'>
+              <div className='active-status'>
                 <span>16.8%</span>
                 <ArrowUpRight className='w-3 h-3' />
               </div>
             </CardDescription>
             <CardAction className=''>
-              <div className='border border-[#1F1F1F] flex items-center gap-2 p-[9px] shadow-[1px_1px_1px_0px_#1F1F1F66] bg-darkmode-bg rounded-[4px] text-dashboard-nav text-[10px] font-medium'>
+              <CustomSelectFilter>
                 <div className='flex items-center gap-0.5'>
                   <PiCalendarBlankFill className='w-[10px] h-[10px]' />
-                  <span>This week</span>
+                  <span>This Week</span>
                 </div>
-                <ChevronDown className='w-3 h-3' />
-              </div>
+              </CustomSelectFilter>
             </CardAction>
           </CardHeader>
 
@@ -114,7 +115,7 @@ function DashboardPage() {
                   <span className='text-[#7E89AC] text-sm'>
                     You&apos;re in{' '}
                   </span>
-                  <div className='border-[0.6px] border-[#05C16833] rounded-[4px] px-1 py-0.5 text-[10px] text-[#14CA74] flex items-center bg-[#05C16833]'>
+                  <div className='active-status'>
                     <span>Top 3%</span>
                   </div>
                 </div>
@@ -139,13 +140,26 @@ function DashboardPage() {
         </h2>
 
         <div className='mt-4 flex items-center justify-between'>
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
+          <div className='w-[33%]'>
+            <ProjectCard />
+          </div>
+
+          <div className='w-[33%]'>
+            <ProjectCard />
+          </div>
+
+          <div className='w-[33%]'>
+            <ProjectCard />
+          </div>
         </div>
       </div>
 
-      <div></div>
+      <div>
+        <h2 className='text-2xl leading-[32px] font-semibold'>Leaderboard</h2>
+        <div className='my-4'>
+          <LeaderboardTable />
+        </div>
+      </div>
     </div>
   );
 }

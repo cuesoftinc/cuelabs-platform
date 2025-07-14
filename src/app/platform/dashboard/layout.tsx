@@ -6,7 +6,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className='bg-black'>
       <div className='h-screen w-screen max-w-[1440px] mx-auto bg-darkmode-bg flex'>
         <Sidebar />
 

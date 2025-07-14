@@ -13,6 +13,7 @@ import { PiPuzzlePieceFill } from 'react-icons/pi';
 import { FaUser } from 'react-icons/fa';
 import { IoMdSettings } from 'react-icons/io';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 function Sidebar() {
   const pathname = usePathname();
@@ -29,9 +30,9 @@ function Sidebar() {
       href: '/platform/dashboard/projects',
     },
     {
-      name: 'Bounties',
+      name: 'Marketplace',
       icon: PiPuzzlePieceFill,
-      href: '/platform/dashboard/bounties',
+      href: '/platform/dashboard/marketplace',
     },
     {
       name: 'Leaderboard',
@@ -63,25 +64,30 @@ function Sidebar() {
 
       {/* Navigation */}
       <nav className='flex-1 space-y-3'>
-        {navLinks.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            className={`flex items-center gap-1 text-sm text-dashboard-nav font-medium hover:text-white transition-colors h-[42px]`}
-          >
-            <link.icon
-              className='w-[14px] h-[14px]'
-              style={{
-                fill: pathname === link.href ? 'url(#activeGradient)' : '',
-              }}
-            />
-            <span
-              className={`${pathname === link.href ? 'gradient-bg-text' : ''}`}
+        {navLinks.map((link) => {
+          const isDashboard = link.href === '/platform/dashboard';
+          const isActive = isDashboard
+            ? pathname === link.href
+            : pathname.startsWith(link.href);
+
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`flex items-center gap-1 text-sm text-dashboard-nav font-medium hover:text-white transition-colors h-[42px]`}
             >
-              {link.name}
-            </span>
-          </a>
-        ))}
+              <link.icon
+                className='w-[14px] h-[14px]'
+                style={{
+                  fill: isActive ? 'url(#activeGradient)' : '',
+                }}
+              />
+              <span className={isActive ? 'gradient-bg-text' : ''}>
+                {link.name}
+              </span>
+            </Link>
+          );
+        })}
 
         <svg width='0' height='0' style={{ position: 'absolute' }}>
           <defs>

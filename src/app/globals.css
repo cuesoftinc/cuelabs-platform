@@ -192,6 +192,18 @@
   .card-container {
     @apply border-[0.6px] border-[#1F1F1F] rounded-[12px] bg-auth-bg!;
   }
+
+  .active-status {
+    @apply border-[0.6px] border-[#05C16833] rounded-[4px] px-1 py-0.5 text-[10px] text-[#14CA74] flex items-center bg-[#05C16833];
+  }
+
+  .inactive-status {
+    @apply border-[0.6px] border-[#FFB01633] rounded-[4px] px-1 py-0.5 text-[10px] text-[#FDB52A] flex items-center bg-[#FFB01633];
+  }
+
+  .new-status {
+    @apply border-[0.6px] border-[#32ADE680] rounded-[4px] px-1 py-0.5 text-[10px] text-[#32ADE6] flex items-center bg-[#32ADE633];
+  }
 }
 
 .nav-text-gradient {

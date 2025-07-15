@@ -13,6 +13,7 @@ import shirt from '@/images/shirt-m.png';
 import macbook from '@/images/macbook-m.png';
 import iwatch from '@/images/iwatch-m.png';
 import ipad from '@/images/ipad-m.png';
+import Link from 'next/link';
 
 function MarketplacePage() {
   const [tabValue, setTabValue] = useState('all');
@@ -48,10 +49,13 @@ function MarketplacePage() {
         </div>
 
         <div className='flex items-center gap-6'>
-          <div className='cursor-pointer bg-none flex items-center gap-1'>
+          <Link
+            href={'/platform/dashboard/marketplace/cart'}
+            className='cursor-pointer bg-none flex items-center gap-1'
+          >
             <Image src={cartIcon} alt='cart icon' />
             Cart
-          </div>
+          </Link>
 
           <div className='cursor-pointer bg-none flex items-center gap-1'>
             <Image src={userIcon} alt='user icon' />

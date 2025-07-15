@@ -3,23 +3,27 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TAB_ITEMS = [
-  { label: 'All', value: 'all' },
-  { label: 'Shirts', value: 'shirts' },
-  { label: 'MacBooks', value: 'macbooks' },
-  { label: 'Laptops', value: 'laptops' },
-  { label: 'iWatches', value: 'iwatches' },
+  { label: 'All', value: 'all', url: '' },
+  { label: 'Shirts', value: 'shirts', url: '' },
+  { label: 'MacBooks', value: 'macbooks', url: '' },
+  { label: 'Laptops', value: 'laptops', url: '' },
+  { label: 'iWatches', value: 'iwatches', url: '' },
 ];
 
 interface TabBarProps {
   value: string;
   onValueChange: (value: string) => void;
   className?: string;
+  tabItems?: { label: string; value: string; url?: string }[];
+  // links?: boolean;
 }
 
 export const TabBar: React.FC<TabBarProps> = ({
   value,
   onValueChange,
   className,
+  tabItems = TAB_ITEMS,
+  // links = false,
 }) => {
   return (
     <Tabs
@@ -28,7 +32,7 @@ export const TabBar: React.FC<TabBarProps> = ({
       className={cn('w-full', className)}
     >
       <TabsList className='flex w-full justify-start gap-2 bg-[#141414] p-2 h-[48px]'>
-        {TAB_ITEMS.map((tab) => (
+        {tabItems.map((tab) => (
           <TabsTrigger
             key={tab.value}
             value={tab.value}

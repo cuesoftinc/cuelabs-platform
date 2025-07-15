@@ -204,6 +204,10 @@
   .new-status {
     @apply border-[0.6px] border-[#32ADE680] rounded-[4px] px-1 py-0.5 text-[10px] text-[#32ADE6] flex items-center bg-[#32ADE633];
   }
+
+  .canceled-status {
+    @apply border-[0.6px] border-[#FF5A6533] rounded-[4px] px-1 py-0.5 text-[10px] text-[#FF5A65] flex items-center bg-[#FF5A6533];
+  }
 }
 
 .nav-text-gradient {
@@ -235,6 +239,16 @@
   );
   color: transparent;
   background-clip: text !important;
+}
+
+.gradient-underline-text {
+  /* text-decoration-color: linear-gradient(
+    98.71deg,
+    #cb39c1 0%,
+    #b91f7a 31%,
+    #3534ff 78%
+  ); */
+  text-decoration-color: #cb39c1 !important;
 }
 
 .gradient-bg-benefits {

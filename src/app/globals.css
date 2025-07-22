@@ -150,7 +150,7 @@
   }
 
   .btn-secondary-p {
-    @apply !bg-[#0A1330] min-h-[50px] min-w-[120px] max-h-[50px] text-[16px] leading-[28px] font-semibold  py-2.5 px-8 !rounded-[4px] cursor-pointer hover:scale-[0.98];
+    @apply !bg-[#0A1330] min-h-[46px] min-w-[120px] max-h-[50px] text-[16px] leading-[28px] font-semibold  py-2.5 px-8 !rounded-[4px] cursor-pointer hover:scale-[0.98];
   }
 
   .btn-secondary {
@@ -186,7 +186,7 @@
   }
 
   .auth-form-content-wrapper {
-    @apply w-[640px] rounded-[16px] border border-auth-border bg-auth-bg mx-auto p-[48px];
+    @apply w-full lg:w-[640px] rounded-[16px] border border-auth-border bg-auth-bg mx-auto p-4 lg:p-[48px];
   }
 
   .card-container {

@@ -37,8 +37,8 @@ function SignupPage() {
       </p>
 
       <div className='mt-8 w-full flex flex-col gap-6'>
-        <div className='flex justify-between'>
-          <div className='input-style w-[48%]'>
+        <div className='flex flex-col gap-6 md:gap-4 lg:gap-0 md:flex-row justify-between'>
+          <div className='input-style lg:w-[48%]'>
             <Label htmlFor='firstname' className=''>
               First Name
             </Label>
@@ -52,7 +52,7 @@ function SignupPage() {
             />
           </div>
 
-          <div className='input-style w-[48%]'>
+          <div className='input-style lg:w-[48%]'>
             <Label htmlFor='lastname' className=''>
               Last Name
             </Label>

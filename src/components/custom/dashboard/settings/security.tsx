@@ -27,7 +27,7 @@ function Security() {
   };
 
   return (
-    <div className='card-container p-5 w-[58%] max-w-[600px]'>
+    <div className='card-container p-5 md:w-[58%] max-w-[600px]'>
       <div className='border-b-[0.6px] border-[#1F1F1F] pb-4'>
         <p className='text-16c font-medium leading-[18px]'>Change Password</p>
       </div>

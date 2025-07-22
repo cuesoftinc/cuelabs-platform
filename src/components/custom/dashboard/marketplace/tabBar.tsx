@@ -31,15 +31,15 @@ export const TabBar: React.FC<TabBarProps> = ({
       onValueChange={onValueChange}
       className={cn('w-full', className)}
     >
-      <TabsList className='flex w-full justify-start gap-2 bg-[#141414] p-2 h-[48px]'>
+      <TabsList className='flex w-full justify-start xl:gap-2 bg-[#141414] p-2 h-[48px] overflow-x-scroll overflow-y-hidden'>
         {tabItems.map((tab) => (
           <TabsTrigger
             key={tab.value}
             value={tab.value}
             className={cn(
-              'font-medium text-lg leading-[100px]',
+              'font-medium text-xs md:text-sm lg:text-lg leading-[100px]',
               value === tab.value
-                ? 'bg-black! text-white shadow-none rounded-[8px] !w-fit min-w-[73px]! px-2 py-4! h-[40px]'
+                ? 'bg-black! text-white shadow-none rounded-[8px] !w-fit md:min-w-[73px]! px-2 py-4! h-[40px]'
                 : 'bg-transparent text-[#535252] hover:text-white',
             )}
           >

@@ -24,17 +24,19 @@ import { PiCalendarBlankFill } from 'react-icons/pi';
 
 function LeaderboardPage() {
   return (
-    <div className='p-12 w-full'>
+    <div className='p-5 md:p-9 lg:p-12 w-full'>
       {/* Heading */}
       <div className='flex items-center justify-between mb-8'>
         <div>
-          <h1 className='text-2xl font-bold text-white'>Leaderboard</h1>
+          <h1 className='text-xl md:text-2xl font-bold text-white'>
+            Leaderboard
+          </h1>
         </div>
       </div>
 
       {/* Overview cards */}
-      <div className='flex justify-between'>
-        <Card className='card-container p-6 w-[62%] max-w-[647px]'>
+      <div className='flex flex-col md:flex-row gap-5 justify-between'>
+        <Card className='card-container p-3 md:p-6 md:w-[62%] max-w-[647px]'>
           <CardHeader className='p-0'>
             <CardTitle className='text-dashboard-nav flex gap-1 items-center font-medium text-xs'>
               <PiTimerFill className='w-3 h-3' />
@@ -46,7 +48,9 @@ function LeaderboardPage() {
                 alt='Cue Currency'
                 className='w-[23.1px] h-[18.73px]'
               />
-              <span className='text-white text-2xl font-semibold'>18,400</span>
+              <span className='text-white text-lg md:text-xl lg:text-2xl font-semibold'>
+                18,400
+              </span>
 
               <div className='active-status'>
                 <span>16.8%</span>
@@ -63,13 +67,13 @@ function LeaderboardPage() {
             </CardAction>
           </CardHeader>
 
-          <CardContent className='p-0'>
-            <Image src={chart} alt='Earnings Chart' className='w-full h-auto' />
+          <CardContent className='p-0 min-h-[60%]'>
+            <Image src={chart} alt='Earnings Chart' className='w-full h-full' />
           </CardContent>
         </Card>
 
-        <div className='flex flex-col gap-6 w-[36%] max-w-[375px]'>
-          <Card className='card-container p-6 h-[115px]'>
+        <div className='flex flex-col gap-6 md:w-[36%] max-w-[375px]'>
+          <Card className='card-container p-4 lg:p-6 h-[115px]'>
             <CardContent className='p-0'>
               <div className='text-dashboard-nav flex gap-1 items-center font-medium text-xs'>
                 <IoIosStar className='w-3 h-3' />
@@ -83,7 +87,7 @@ function LeaderboardPage() {
                   alt='Cue Currency'
                   className='w-[23.1px] h-[18.73px]'
                 />
-                <span className='text-white text-[40px] leading-[32px] font-semibold'>
+                <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
                   100,400
                 </span>
               </div>
@@ -91,7 +95,7 @@ function LeaderboardPage() {
             </CardContent>
           </Card>
 
-          <Card className='card-container p-6 h-[115px]'>
+          <Card className='card-container p-4 lg:p-6 h-[115px]'>
             <CardContent className='p-0'>
               <div className='flex items-center justify-between'>
                 <div className='text-dashboard-nav flex gap-1 items-center font-medium text-xs'>
@@ -111,7 +115,7 @@ function LeaderboardPage() {
 
               {/* <div> */}
               <div className='mt-4'>
-                <span className='text-white text-[40px] leading-[32px] font-semibold'>
+                <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
                   13th
                 </span>
               </div>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 function ProfileInformation() {
   return (
-    <div className='card-container p-5 w-[58%] max-w-[600px]'>
+    <div className='card-container p-5 md:w-[58%] max-w-[600px]'>
       <div className='border-b-[0.6px] border-[#1F1F1F] pb-4'>
         <div className='text-white flex items-center gap-1'>
           <ImageIcon width={12} height={12} />
@@ -20,8 +20,8 @@ function ProfileInformation() {
         </div>
       </div>
       <div className=' w-full flex flex-col gap-6 mt-4'>
-        <div className='flex justify-between'>
-          <div className='input-style w-[48%]'>
+        <div className='flex flex-col gap-6 md:flex-row justify-between'>
+          <div className='input-style md:w-[48%]'>
             <Label htmlFor='firstname' className=''>
               First Name
             </Label>
@@ -35,7 +35,7 @@ function ProfileInformation() {
             />
           </div>
 
-          <div className='input-style w-[48%]'>
+          <div className='input-style md:w-[48%]'>
             <Label htmlFor='lastname' className=''>
               Last Name
             </Label>

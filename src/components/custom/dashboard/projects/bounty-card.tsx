@@ -41,7 +41,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
 
   return (
     <Card className='card-container p-0 w-full max-w-[329px] gap-0'>
-      <CardContent className='p-5'>
+      <CardContent className='p-3 md:p-5'>
         <div className='flex items-center justify-between'>
           <div>
             <Image src={projectLogo} alt='project logo' />
@@ -65,7 +65,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className='mt-0 py-4 border-t-[0.6px] border-[#1F1F1F] justify-between'>
+      <CardFooter className='mt-0 py-4 border-t-[0.6px] border-[#1F1F1F] justify-between px-3 md:px-5 '>
         <div className='flex gap-2 items-center bg-[#0F0F0F] border-[0.6px] border-[#1F1F1F] p-2 text-white font-medium text-xs rounded-[2px]'>
           {category === 'development' && (
             <FaCode className='text-[#545454] w-3 h-3' />
@@ -99,7 +99,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
       <Dialog open={openBountyDetails} onOpenChange={setOpenBountyDetails}>
         <DialogContent
           aria-describedby={undefined}
-          className='bg-[#0A0A0A] p-[30px] rounded-[12px] max-h-[90vh] w-[60vw]! max-w-[731px]! border-0 overflow-auto shadow-2xl'
+          className='bg-[#0A0A0A] p-3 md:p-[20px] lg:p-[30px] rounded-[12px] max-h-[90vh] w-[80vw]! md:w-[60vw]! max-w-[731px]! border-0 overflow-auto shadow-2xl'
         >
           <VisuallyHidden>
             <DialogTitle>Bounty Details</DialogTitle>
@@ -119,7 +119,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
               {/* Header */}
               <div>
                 <div className='flex items-center gap-2'>
-                  <h2 className='text-xl leading-[120%] -tracking-[2%]'>
+                  <h2 className='text-lg md:text-xl leading-[120%] -tracking-[2%]'>
                     Homepage Bug
                   </h2>
                   <span className='active-status gap-1'>
@@ -128,15 +128,15 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
                   </span>
                 </div>
 
-                <p className='text-auth-text text-[16px] leading-[145%] mt-2'>
+                <p className='text-auth-text text-xs md:text-[16px] leading-[145%] md:mt-2'>
                   Bounty Details
                 </p>
               </div>
 
               {/* Body */}
               <div className='mt-8 flex flex-col gap-4'>
-                <div className='flex gap-2 items-center justify-between'>
-                  <div className='w-[20%]'>
+                <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
+                  <div className='md:w-[20%]'>
                     <p className='text-auth-text text-xs leading-[16px]'>
                       Participants
                     </p>
@@ -164,27 +164,27 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
                   </div>
                 </div>
 
-                <div className='flex gap-2 items-center justify-between'>
-                  <div className='w-[20%]'>
+                <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
+                  <div className='md:w-[20%]'>
                     <p className='text-auth-text text-xs leading-[16px]'>
                       Due Date
                     </p>
                   </div>
                   <div className='w-full'>
-                    <span className='text-sm leading-[145%]'>
+                    <span className='text-xs md:text-sm md:leading-[145%]'>
                       February 2, 2025
                     </span>
                   </div>
                 </div>
 
-                <div className='flex gap-2 justify-between'>
+                <div className='flex flex-col md:flex-row gap-2 justify-between'>
                   <div className='w-[20%]'>
                     <p className='text-auth-text text-xs leading-[16px]'>
                       Description
                     </p>
                   </div>
                   <div className='w-full'>
-                    <span className='text-sm leading-[145%]'>
+                    <span className='text-xs md:text-sm md:leading-[145%]'>
                       February A little about the project and the team that
                       you&apos;ll be working with. A little about the
                       specifications you&apos;ll be working with. This is where
@@ -194,23 +194,33 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
                   </div>
                 </div>
 
-                <div className='flex gap-2 justify-between'>
-                  <div className='w-[20%]'>
+                <div className='flex flex-col md:flex-row gap-2 justify-between'>
+                  <div className='md:w-[20%]'>
                     <p className='text-auth-text text-xs leading-[16px]'>
                       Link
                     </p>
                   </div>
-                  <div className='w-full'>
+                  <div className='w-full flex items-center gap-2'>
                     <div className='rounded-[16px] bg-[#1A1A1A] px-3 py-1.5 flex items-center gap-2 w-fit cursor-pointer'>
                       <span className='text-sm leading-[145%] underline'>
                         https://www.github.co/homepagebugbj
                       </span>
                     </div>
+
+                    <ExternalLink
+                      width={20}
+                      height={20}
+                      className='inline-block'
+                    />
                   </div>
-                  <ExternalLink width={20} height={20} />
+                  {/* <ExternalLink
+                    width={20}
+                    height={20}
+                    className='hidden md:inline-block'
+                  /> */}
                 </div>
 
-                <div className='flex gap-2 justify-between'>
+                <div className='flex flex-col md:flex-row gap-2 justify-between'>
                   <div className='w-[20%]'>
                     <p className='text-auth-text text-xs leading-[16px]'>
                       Reward
@@ -223,7 +233,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
                         alt='cue currency icon with gradient color'
                       />
 
-                      <span className='text-2xl leading-[32px] font-semibold'>
+                      <span className='text-xl md:text-2xl leading-[32px] font-semibold'>
                         18,400
                       </span>
                     </div>
@@ -247,7 +257,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
               </div>
 
               {/* Buttons */}
-              <div className='flex gap-4 justify-end w-full mt-8'>
+              <div className='flex gap-4 justify-between items-center md:justify-end w-full mt-8'>
                 <Button className='btn-secondary-p w-fit'>Cancel</Button>
 
                 <Button
@@ -268,7 +278,7 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
       <Dialog open={openSuccess} onOpenChange={setOpenSuccess}>
         <DialogContent
           aria-describedby={undefined}
-          className='bg-[#0A0A0A] p-[20px] rounded-[12px] max-h-[292px] w-[35%]! max-w-[318px]! border-0 shadow-2xl'
+          className='bg-[#0A0A0A] p-[20px] rounded-[12px] max-h-[292px] w-[70%] md:w-[35%]! max-w-[318px]! border-0 shadow-2xl'
         >
           <VisuallyHidden>
             <DialogTitle>Bounty Submission Success</DialogTitle>

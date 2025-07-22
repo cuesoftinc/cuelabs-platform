@@ -11,9 +11,9 @@ import BountyCard from '@/components/custom/dashboard/projects/bounty-card';
 
 function ProjectDetailsPage() {
   return (
-    <div className='p-12 w-full'>
+    <div className='p-5 md:p-9 xl:p-12 w-full'>
       {/* Heading */}
-      <div className='flex items-center justify-between mb-10'>
+      <div className='flex items-center justify-between mb-6 lg:mb-10'>
         <div>
           <div className='text-auth-text text-sm leading-[140%] flex items-center gap-4'>
             <span>Projects</span>
@@ -32,9 +32,9 @@ function ProjectDetailsPage() {
 
       {/* Description card */}
       <div className='flex justify-between'>
-        <Card className='card-container p-6 h-[204px] w-full'>
+        <Card className='card-container p-6 h-fit md:h-[204px] w-full'>
           <CardContent className='p-0 text-auth-text'>
-            <div className='flex items-center gap-6'>
+            <div className='flex flex-wrap items-center gap-6'>
               <div className='flex items-center gap-4'>
                 <div className='flex gap-2 items-center bg-[#0F0F0F] border-[0.6px] border-[#1F1F1F] p-2 text-white font-medium text-xs rounded-[2px]'>
                   <FaCode className='text-[#545454] w-3 h-3' />
@@ -72,22 +72,22 @@ function ProjectDetailsPage() {
       </div>
 
       {/* Bounties List */}
-      <div className='mt-12'>
-        <div className='flex justify-between items-center'>
-          <div className='flex items-center justify-between w-[50%]'>
+      <div className='mt-8 md:mt-12'>
+        <div className='flex flex-col gap-6 md:flex-row justify-between md:items-center'>
+          <div className='flex flex-col gap-4 md:flex-row md:items-center justify-between md:w-[60%] xl:w-[50%]'>
             <h4 className='font-medium text-16c leading-[18px]'>Bounties</h4>
 
-            <div className='relative w-[80%] max-w-[375px] text-auth-text'>
+            <div className='relative w-full md:w-[80%] max-w-[375px] text-auth-text'>
               <CiSearch className='absolute left-3 top-1/2 -translate-y-1/2' />
               <Input
                 type='text'
-                placeholder='Search for projects...'
+                placeholder='Search for bounties...'
                 className='pl-10 border-auth-border bg-darkmode-bg text-xs rounded-[4px]'
               />
             </div>
           </div>
 
-          <div className='flex items-center justify-between w-[20%]'>
+          <div className='flex gap-4 items-center justify-between w-fit md:w-[27%] xl:w-[20%]'>
             <CustomSelectFilter>
               <span>Status</span>
             </CustomSelectFilter>
@@ -101,8 +101,8 @@ function ProjectDetailsPage() {
           </div>
         </div>
 
-        <div className='mt-10 flex justify-between'>
-          <div className='w-[31.5%] max-w-[329px]'>
+        <div className='mt-10 w-full flex gap-5 justify-between overflow-auto max-h-[80vh]'>
+          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
             <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
               <span>New</span>
               <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>
@@ -116,7 +116,7 @@ function ProjectDetailsPage() {
             </div>
           </div>
 
-          <div className='w-[31.5%] max-w-[329px]'>
+          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
             <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
               <span>In Progress</span>
               <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>
@@ -131,7 +131,7 @@ function ProjectDetailsPage() {
             </div>
           </div>
 
-          <div className='w-[31.5%] max-w-[329px]'>
+          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
             <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
               <span>Completed</span>
               <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>

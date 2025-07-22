@@ -40,12 +40,16 @@ function MarketplacePage() {
   ];
 
   return (
-    <div className='p-12 w-full'>
+    <div className='p-5 md:p-9 lg:p-12 w-full'>
       {/* Heading */}
-      <div className='flex items-center justify-between mb-8'>
+      <div className='flex gap-4 items-center justify-between mb-8'>
         <div>
-          <h1 className='text-2xl font-bold text-white'>Marketplace</h1>
-          <p className='text-auth-text mt-1'>Place orders on with your cues</p>
+          <h1 className='text-xl md:text-2xl font-bold text-white'>
+            Marketplace
+          </h1>
+          <p className='text-auth-text text-xs mt-1'>
+            Place orders on with your cues
+          </p>
         </div>
 
         <div className='flex items-center gap-6'>
@@ -54,19 +58,19 @@ function MarketplacePage() {
             className='cursor-pointer bg-none flex items-center gap-1'
           >
             <Image src={cartIcon} alt='cart icon' />
-            Cart
+            <span className='hidden md:inline-block'>Cart</span>
           </Link>
 
           <div className='cursor-pointer bg-none flex items-center gap-1'>
             <Image src={userIcon} alt='user icon' />
-            Profile
+            <span className='hidden md:inline-block'>Profile</span>
           </div>
         </div>
       </div>
 
       {/*  */}
       <div className='w-full'>
-        <div className='w-[60%]'>
+        <div className='w-full xl:w-[60%]'>
           <TabBar
             value={tabValue}
             onValueChange={setTabValue}

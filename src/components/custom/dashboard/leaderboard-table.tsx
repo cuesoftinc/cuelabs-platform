@@ -64,8 +64,8 @@ const sampleData = [
 
 function LeaderboardTable() {
   return (
-    <div className='bg-auth-bg border-[0.6px] border-auth-border shadow-[1px_1px_1px_0px_#10193466] rounded-[12px] py-8'>
-      <div className='flex justify-between items-center px-12'>
+    <div className='bg-auth-bg border-[0.6px] border-auth-border shadow-[1px_1px_1px_0px_#10193466] rounded-[12px] py-4 lg:py-8'>
+      <div className='flex justify-between items-center px-4 lg:px-12'>
         <h4 className='font-medium text-16c leading-[18px]'>
           Top Contributors
         </h4>

@@ -208,6 +208,10 @@
   .canceled-status {
     @apply border-[0.6px] border-[#FF5A6533] rounded-[4px] px-1 py-0.5 text-[10px] text-[#FF5A65] flex items-center bg-[#FF5A6533];
   }
+
+  .todo-status {
+    @apply border-[0.6px] border-[#A0A0A033] rounded-[4px] px-1 py-0.5 text-[10px] text-[#A0A0A0] flex items-center bg-[#A0A0A033];
+  }
 }
 
 .nav-text-gradient {

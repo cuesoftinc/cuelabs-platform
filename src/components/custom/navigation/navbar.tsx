@@ -42,8 +42,6 @@ function NavBar({ setOpen }: NavBarProps) {
 
   const router = useRouter();
 
-  console.log(setOpen);
-
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -67,6 +65,11 @@ function NavBar({ setOpen }: NavBarProps) {
   //   setOpenMenu(false);
   //   setOpen(true);
   // };
+
+  // const handleWaitlistClick = () => {
+  //   setOpen(true);
+  // };
+  console.log(setOpen);
 
   return (
     <nav className='fixed w-full z-10 shadow-lg bg-product-walkthrough-bg'>
@@ -93,7 +96,8 @@ function NavBar({ setOpen }: NavBarProps) {
           variant={'default'}
           className='btn-main hidden lg:flex'
           // onClick={handleButtonClick}
-          onClick={() => router.push('/platform/auth/login')}
+          onClick={() => router.push('/platform/dashboard')}
+          // onClick={() => router.push('/platform/auth/login')}
         >
           Get Started
           <Image src={btnIcon} alt='Arrow Icon' />

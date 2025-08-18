@@ -1,42 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import Image from 'next/image';
+// import { useRouter } from 'next/navigation';
 
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Eye, EyeOff } from 'lucide-react';
+import googleIcon from '@/svgs/google.svg';
+import githubIcon from '@/svgs/github.svg';
+import appleIcon from '@/svgs/apple.svg';
+
+// import { Label } from '@/components/ui/label';
+// import { Input } from '@/components/ui/input';
+// import { Button } from '@/components/ui/button';
+// import { Eye, EyeOff } from 'lucide-react';
 
 function SignupPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  // const [showPassword, setShowPassword] = useState(false);
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [firstName, setFirstName] = useState('');
+  // const [lastName, setLastName] = useState('');
 
-  const router = useRouter();
+  // const router = useRouter();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  // const togglePasswordVisibility = () => {
+  //   setShowPassword(!showPassword);
+  // };
 
-  const handleSubmit = () => {
-    router.push('/platform/auth/otp');
-  };
+  // const handleSubmit = () => {
+  //   router.push('/platform/auth/otp');
+  // };
 
-  const isFormValid = email.trim() !== '' && password.trim() !== '';
+  // const isFormValid = email.trim() !== '' && password.trim() !== '';
 
   return (
     <>
       <h1 className='text-white text-2xl leading-[120%] font-semibold mb-2'>
         Create Account
       </h1>
-      <p className='text-16c text-auth-text leading-[140%] '>
+      {/* <p className='text-16c text-auth-text leading-[140%] '>
         Enter your details to create an account.
-      </p>
+      </p> */}
 
-      <div className='mt-8 w-full flex flex-col gap-6'>
+      {/* <div className='mt-8 w-full flex flex-col gap-6'>
         <div className='flex flex-col gap-6 md:gap-4 lg:gap-0 md:flex-row justify-between'>
           <div className='input-style lg:w-[48%]'>
             <Label htmlFor='firstname' className=''>
@@ -107,18 +112,43 @@ function SignupPage() {
             </button>
           </div>
         </div>
+      </div> */}
+      <div className='my-8 w-full flex flex-col gap-4'>
+        <div className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'>
+          <Image src={googleIcon} alt='Google Icon' width={24} height={24} />
+          <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
+            Sign Up with Google
+          </span>
+        </div>
+
+        <div className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'>
+          <Image src={appleIcon} alt='Apple Icon' width={24} height={24} />
+          <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
+            Sign Up with Apple
+          </span>
+        </div>
+
+        <div className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'>
+          <Image src={githubIcon} alt='Github Icon' width={24} height={24} />
+          <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
+            Sign Up with Github
+          </span>
+        </div>
       </div>
+
       <div className='w-full text-center'>
-        <Button
+        {/* <Button
           className='btn-main-p my-8'
           disabled={!isFormValid}
           onClick={handleSubmit}
         >
           Create Account
-        </Button>
+        </Button> */}
         <p className='text-16c '>
           Already have an account?{' '}
-          <span className='gradient-bg-text cursor-pointer'>Log in</span>
+          <span className='gradient-bg-text cursor-pointer hover:opacity-50'>
+            Log in
+          </span>
         </p>
       </div>
     </>

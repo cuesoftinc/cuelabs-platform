@@ -1,43 +1,56 @@
+'use client';
+
 import React from 'react';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
-import {
-  columns,
-  Project,
-} from '@/components/custom/dashboard/projects/columns';
+import { columns } from '@/components/custom/dashboard/projects/columns';
 import { DataTable } from '@/components/custom/dashboard/projects/data-table';
 import { Card, CardContent } from '@/components/ui/card';
 import { PiCalendarBlankFill } from 'react-icons/pi';
 import { Input } from '@/components/ui/input';
 import { CiSearch } from 'react-icons/ci';
+import { useFetchProjects } from '@/hooks/queries/useProjects';
+import CustomSpinner from '@/components/custom/custom-spinner';
 
-const projectsData: Project[] = [
-  {
-    name: 'Expendit',
-    reward: 450,
-    participants: 5,
-    status: 'new',
-  },
-  {
-    name: 'Apparule',
-    reward: 450,
-    participants: 5,
-    status: 'completed',
-  },
-  {
-    name: 'Upstat',
-    reward: 450,
-    participants: 5,
-    status: 'in-progress',
-  },
-  {
-    name: 'Storefront',
-    reward: 450,
-    participants: 5,
-    status: 'completed',
-  },
-];
+// const projectsData: Project[] = [
+//   {
+//     name: 'Expendit',
+//     reward: 450,
+//     participants: 5,
+//     status: 'new',
+//   },
+//   {
+//     name: 'Apparule',
+//     reward: 450,
+//     participants: 5,
+//     status: 'completed',
+//   },
+//   {
+//     name: 'Upstat',
+//     reward: 450,
+//     participants: 5,
+//     status: 'in-progress',
+//   },
+//   {
+//     name: 'Storefront',
+//     reward: 450,
+//     participants: 5,
+//     status: 'completed',
+//   },
+// ];
 
 function ProjectsPage() {
+  // const params: Record<string, string> = {
+  //   view: 'Grid view',
+  //   maxRecords: '5',
+  // };
+  const { data: projectsData, isLoading } = useFetchProjects();
+
+  // console.log('Projects Data:', projectsData);
+
+  if (isLoading) {
+    return <CustomSpinner />;
+  }
+
   return (
     <div className='p-5 md:p-9 lg:p-12 w-full'>
       {/* Heading */}
@@ -121,7 +134,7 @@ function ProjectsPage() {
         </div>
 
         <div className='mt-6'>
-          <DataTable columns={columns} data={projectsData} />
+          <DataTable columns={columns} data={projectsData?.records || []} />
         </div>
       </div>
     </div>

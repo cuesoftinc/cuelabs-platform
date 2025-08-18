@@ -26,18 +26,171 @@ import projectLogo from '@/svgs/project-logo.svg';
 import cueCurrency from '@/svgs/cue-currency-gradient.svg';
 import CustomTextareaToolbar from '../custom-textarea-toolbar';
 import successCheckmark from '@/svgs/success-labs.svg';
+import { Bounty } from '@/types/bounties';
+import { formatDateToDayMonthYear } from '@/lib/utils';
+import {
+  useFetchBounty,
+  useCreateSubmission,
+} from '@/hooks/queries/useProjects';
+import { User } from '@/types/users';
+// import { useAuth } from '@/hooks/queries/useAuth';
 
 type BountyCardProps = {
-  // projectLogo?: string;
-  // bountyCount: number;
-  // title: string;
-  // description: string;
+  bounty?: Bounty;
   category?: string;
 };
 
-function BountyCard({ category = 'development' }: BountyCardProps) {
+function BountyCard({ bounty, category = 'development' }: BountyCardProps) {
   const [openBountyDetails, setOpenBountyDetails] = useState(false);
   const [openSuccess, setOpenSuccess] = useState(false);
+  const [submissionUrl, setSubmissionUrl] = useState('');
+  const [comments, setComments] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [urlError, setUrlError] = useState('');
+  const [submissionError, setSubmissionError] = useState('');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  // const [submissionId, setSubmissionId] = useState<string | null>(null);
+  // const { user } = useAuth();
+  const createSubmissionMutation = useCreateSubmission();
+
+  const { data: bountyDetailsData, error: bountyDetailsError } = useFetchBounty(
+    bounty?.id.toString() || '',
+  );
+
+  const validateUrl = (url: string) => {
+    if (!url.trim()) {
+      return 'Submission URL is required';
+    }
+
+    // Basic URL format validation
+    try {
+      const urlObj = new URL(url);
+
+      // Check if it's a valid protocol
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return 'URL must use http:// or https://';
+      }
+
+      // Encourage specific platforms for submissions
+      const hostname = urlObj.hostname.toLowerCase();
+      const validPlatforms = [
+        'github.com',
+        'gitlab.com',
+        'bitbucket.org',
+        'codepen.io',
+        'codesandbox.io',
+        'stackblitz.com',
+        'vercel.app',
+        'netlify.app',
+        'herokuapp.com',
+        'figma.com',
+        'dribbble.com',
+        'behance.net',
+      ];
+
+      const isValidPlatform = validPlatforms.some(
+        (platform) =>
+          hostname === platform || hostname.endsWith('.' + platform),
+      );
+
+      if (!isValidPlatform) {
+        console.warn('Uncommon platform detected:', hostname);
+      }
+
+      return '';
+    } catch {
+      return 'Please enter a valid URL (e.g., https://github.com/username/repo)';
+    }
+  };
+
+  const handleSubmit = async () => {
+    // Clear previous errors
+    setUrlError('');
+    setSubmissionError('');
+
+    const urlValidationError = validateUrl(submissionUrl);
+    setUrlError(urlValidationError);
+
+    if (urlValidationError) {
+      return;
+    }
+
+    if (!bounty?.id) {
+      setSubmissionError('No bounty ID available');
+      return;
+    }
+
+    // if (!user) {
+    //   setSubmissionError('You must be logged in to submit');
+    //   return;
+    // }
+
+    setIsSubmitting(true);
+
+    try {
+      // const submission = await createSubmissionMutation.mutateAsync({
+      //   Url: submissionUrl,
+      //   Bounties: [bounty.id],
+      //   Comment: comments.trim() || undefined,
+      // });
+      await createSubmissionMutation.mutateAsync({
+        Url: submissionUrl,
+        Bounties: [bounty.id],
+        Comment: comments.trim() || undefined,
+      });
+
+      setHasSubmitted(true);
+      setOpenBountyDetails(false);
+      setOpenSuccess(true);
+
+      // Reset form
+      setSubmissionUrl('');
+      setComments('');
+      setUrlError('');
+      setSubmissionError('');
+      // setSubmissionId(null);
+    } catch (error) {
+      console.error('Submission error:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to submit. Please try again.';
+      setSubmissionError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setOpenBountyDetails(false);
+    setSubmissionUrl('');
+    setComments('');
+    setUrlError('');
+    setSubmissionError('');
+    setHasSubmitted(false);
+    // setSubmissionId(null);
+  };
+
+  const isFormValid = submissionUrl.trim() !== '' && !urlError;
+
+  const fields = bountyDetailsData?.fields;
+  const displayCategory = fields?.Genre?.toLowerCase() || category;
+  const participantCount = fields?.Participants?.length || 0;
+
+  // console.log('Bounty Card Fields:', bountyDetailsData);
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'In progress':
+        return '#FDB52A';
+      case 'Done':
+        return '#14CA74';
+      case 'New':
+        return '#32ADE6';
+      default:
+        return '#05C168'; // Default to green for "Open"
+    }
+  };
 
   return (
     <Card className='card-container p-0 w-full max-w-[329px] gap-0'>
@@ -49,36 +202,38 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
 
           <div className='flex gap-1 items-center font-medium text-dashboard-nav text-[10px] '>
             <PiPuzzlePieceFill className='w-3 h-3' />
-            <span>5 Bounties</span>
+            <span>
+              {participantCount} Participant{participantCount !== 1 ? 's' : ''}
+            </span>
           </div>
         </div>
 
         <div className='mt-4'>
           <h3 className='text-xs leading-[14px] mb-1 font-semibold text-white'>
-            Landing page design & development
+            {fields?.Name || 'Landing page design & development'}
           </h3>
 
           <p className='text-xs leading-[18px] font-medium text-dashboard-nav'>
-            Lorem ipsum dolor sit amet consectetur sed id massa morbi porta
-            malesuada dictumst.
+            {fields?.Description ||
+              'Lorem ipsum dolor sit amet consectetur sed id massa morbi porta malesuada dictumst.'}
           </p>
         </div>
       </CardContent>
 
       <CardFooter className='mt-0 py-4 border-t-[0.6px] border-[#1F1F1F] justify-between px-3 md:px-5 '>
         <div className='flex gap-2 items-center bg-[#0F0F0F] border-[0.6px] border-[#1F1F1F] p-2 text-white font-medium text-xs rounded-[2px]'>
-          {category === 'development' && (
+          {displayCategory === 'development' && (
             <FaCode className='text-[#545454] w-3 h-3' />
           )}
-          {category === 'design' && (
+          {displayCategory === 'design' && (
             <HiMiniPencil className='text-[#545454] w-3 h-3' />
           )}
           <span>
-            {category === 'development'
+            {displayCategory === 'development'
               ? 'Development'
-              : category === 'design'
+              : displayCategory === 'design'
                 ? 'Design'
-                : category}
+                : fields?.Genre || 'Development'}
           </span>
         </div>
         <Popover>
@@ -105,180 +260,332 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
             <DialogTitle>Bounty Details</DialogTitle>
           </VisuallyHidden>
 
-          <div className='w-full'>
-            <div className='flex justify-end w-full text-[#919EAB]'>
-              <IoCloseCircleSharp
-                width={24}
-                height={24}
-                className='cursor-pointer'
-                onClick={() => setOpenBountyDetails(false)}
-              />
+          {bountyDetailsError ? (
+            <div className='text-red-500'>
+              Error loading bounty details: {bountyDetailsError.message}
             </div>
+          ) : (
+            <div className='w-full'>
+              <div className='flex justify-end w-full text-[#919EAB]'>
+                <IoCloseCircleSharp
+                  width={24}
+                  height={24}
+                  className='cursor-pointer'
+                  onClick={() => setOpenBountyDetails(false)}
+                />
+              </div>
 
-            <div>
-              {/* Header */}
               <div>
-                <div className='flex items-center gap-2'>
-                  <h2 className='text-lg md:text-xl leading-[120%] -tracking-[2%]'>
-                    Homepage Bug
-                  </h2>
-                  <span className='active-status gap-1'>
-                    <div className='w-[3px] h-[3px] bg-[#05C168] rounded-full inline-block' />
-                    Open
-                  </span>
-                </div>
-
-                <p className='text-auth-text text-xs md:text-[16px] leading-[145%] md:mt-2'>
-                  Bounty Details
-                </p>
-              </div>
-
-              {/* Body */}
-              <div className='mt-8 flex flex-col gap-4'>
-                <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
-                  <div className='md:w-[20%]'>
-                    <p className='text-auth-text text-xs leading-[16px]'>
-                      Participants
-                    </p>
-                  </div>
-                  <div className='flex gap-3 items-center justify-start w-full'>
-                    <div className='rounded-[16px] border border-auth-border bg-[#0F0F0F] px-1.5 py-1 flex items-center gap-2'>
-                      <div className='w-[24px] h-[24px] bg-auth-bg rounded-full  text-[10px] text-[#3CB49D] leading-[16px] flex items-center justify-center'>
-                        MJ
-                      </div>
-
-                      <span className='text-xs leading-[16px] '>
-                        Mallory James
-                      </span>
-                    </div>
-
-                    <div className='rounded-[16px] border border-auth-border bg-[#0F0F0F] px-1.5 py-1 flex items-center gap-2'>
-                      <div className='w-[24px] h-[24px] bg-auth-bg rounded-full  text-[10px] text-[#3CB49D] leading-[16px] flex items-center justify-center'>
-                        OO
-                      </div>
-
-                      <span className='text-xs leading-[16px] '>
-                        Olaife Olawore
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
-                  <div className='md:w-[20%]'>
-                    <p className='text-auth-text text-xs leading-[16px]'>
-                      Due Date
-                    </p>
-                  </div>
-                  <div className='w-full'>
-                    <span className='text-xs md:text-sm md:leading-[145%]'>
-                      February 2, 2025
-                    </span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col md:flex-row gap-2 justify-between'>
-                  <div className='w-[20%]'>
-                    <p className='text-auth-text text-xs leading-[16px]'>
-                      Description
-                    </p>
-                  </div>
-                  <div className='w-full'>
-                    <span className='text-xs md:text-sm md:leading-[145%]'>
-                      February A little about the project and the team that
-                      you&apos;ll be working with. A little about the
-                      specifications you&apos;ll be working with. This is where
-                      the description goes little about the project and the team
-                      that you&apos;ll be working with2, 2025
-                    </span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col md:flex-row gap-2 justify-between'>
-                  <div className='md:w-[20%]'>
-                    <p className='text-auth-text text-xs leading-[16px]'>
-                      Link
-                    </p>
-                  </div>
-                  <div className='w-full flex items-center gap-2'>
-                    <div className='rounded-[16px] bg-[#1A1A1A] px-3 py-1.5 flex items-center gap-2 w-fit cursor-pointer'>
-                      <span className='text-sm leading-[145%] underline'>
-                        https://www.github.co/homepagebugbj
-                      </span>
-                    </div>
-
-                    <ExternalLink
-                      width={20}
-                      height={20}
-                      className='inline-block'
-                    />
-                  </div>
-                  {/* <ExternalLink
-                    width={20}
-                    height={20}
-                    className='hidden md:inline-block'
-                  /> */}
-                </div>
-
-                <div className='flex flex-col md:flex-row gap-2 justify-between'>
-                  <div className='w-[20%]'>
-                    <p className='text-auth-text text-xs leading-[16px]'>
-                      Reward
-                    </p>
-                  </div>
-                  <div className='w-full'>
-                    <div className='flex items-center gap-2 w-fit cursor-pointer'>
-                      <Image
-                        src={cueCurrency}
-                        alt='cue currency icon with gradient color'
-                      />
-
-                      <span className='text-xl md:text-2xl leading-[32px] font-semibold'>
-                        18,400
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
+                {/* Header */}
                 <div>
-                  <div className='input-style'>
-                    <Label htmlFor='email' className=''>
-                      Submission URL
-                    </Label>
-                    <Input
-                      type='text'
-                      id='submission-url'
-                      placeholder='https://www.'
-                    />
+                  <div className='flex items-center gap-2'>
+                    <h2 className='text-lg md:text-xl leading-[120%] -tracking-[2%]'>
+                      {fields?.Name || 'Homepage Bug'}
+                    </h2>
+                    <span
+                      className={`active-status gap-1 ${
+                        fields?.Status === 'In progress'
+                          ? 'inactive-status'
+                          : fields?.Status === 'Done'
+                            ? 'active-status'
+                            : 'new-status'
+                      }`}
+                    >
+                      <div
+                        className='w-[3px] h-[3px] rounded-full inline-block'
+                        style={{
+                          backgroundColor: getStatusColor(fields?.Status),
+                        }}
+                      />
+                      {fields?.Status}
+                    </span>
+                  </div>
+
+                  <p className='text-auth-text text-xs md:text-[16px] leading-[145%] md:mt-2'>
+                    Bounty Details
+                  </p>
+                </div>
+
+                {/* Body */}
+                <div className='mt-8 flex flex-col gap-4'>
+                  <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
+                    <div className='md:w-[20%]'>
+                      <p className='text-auth-text text-xs leading-[16px]'>
+                        Participants
+                      </p>
+                    </div>
+                    <div className='flex gap-3 items-center justify-start w-full'>
+                      {fields?.Participants &&
+                      fields.Participants.length > 0 ? (
+                        fields.Participants.slice(0, 3).map(
+                          (participant: User, index: number) => {
+                            // Handle both User objects and string IDs
+                            const isUserObject =
+                              typeof participant === 'object' &&
+                              participant !== null &&
+                              'fields' in participant;
+                            const userName = isUserObject
+                              ? participant.fields?.Name
+                              : typeof participant === 'string'
+                                ? participant
+                                : 'Unknown User';
+                            const userInitials = userName
+                              ? userName
+                                  .split(' ')
+                                  .map((n) => n.charAt(0))
+                                  .join('')
+                                  .toUpperCase()
+                                  .substring(0, 2)
+                              : 'UN';
+
+                            return (
+                              <div
+                                key={index}
+                                className='rounded-[16px] border border-auth-border bg-[#0F0F0F] px-1.5 py-1 flex items-center gap-2'
+                              >
+                                <div className='w-[24px] h-[24px] bg-auth-bg rounded-full text-[10px] text-[#3CB49D] leading-[16px] flex items-center justify-center'>
+                                  {userInitials}
+                                </div>
+                                <span className='text-xs leading-[16px]'>
+                                  {userName}
+                                </span>
+                              </div>
+                            );
+                          },
+                        )
+                      ) : (
+                        <span className='text-xs text-auth-text'>
+                          No participants yet
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col md:flex-row gap-2 md:items-center justify-between'>
+                    <div className='md:w-[20%]'>
+                      <p className='text-auth-text text-xs leading-[16px]'>
+                        Due Date
+                      </p>
+                    </div>
+                    <div className='w-full'>
+                      <span className='text-xs md:text-sm md:leading-[145%]'>
+                        {fields?.['Due Date']
+                          ? formatDateToDayMonthYear(fields?.['Due Date'])
+                          : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col md:flex-row gap-2 justify-between'>
+                    <div className='w-[20%]'>
+                      <p className='text-auth-text text-xs leading-[16px]'>
+                        Description
+                      </p>
+                    </div>
+                    <div className='w-full'>
+                      <span className='text-xs md:text-sm md:leading-[145%]'>
+                        {fields?.Description ||
+                          "A little about the project and the team that you'll be working with. A little about the specifications you'll be working with. This is where the description goes little about the project and the team that you'll be working with."}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col md:flex-row gap-2 justify-between'>
+                    <div className='md:w-[20%]'>
+                      <p className='text-auth-text text-xs leading-[16px]'>
+                        Link
+                      </p>
+                    </div>
+                    <div className='w-full flex items-center gap-2'>
+                      <div className='rounded-[16px] bg-[#1A1A1A] px-3 py-1.5 flex items-center gap-2 w-fit cursor-pointer'>
+                        <span className='text-sm leading-[145%] underline'>
+                          https://www.github.co/homepagebugbj
+                        </span>
+                      </div>
+
+                      <ExternalLink
+                        width={20}
+                        height={20}
+                        className='inline-block'
+                      />
+                    </div>
+                    {/* <ExternalLink
+                          width={20}
+                          height={20}
+                          className='hidden md:inline-block'
+                        /> */}
+                  </div>
+
+                  <div className='flex flex-col md:flex-row gap-2 justify-between'>
+                    <div className='w-[20%]'>
+                      <p className='text-auth-text text-xs leading-[16px]'>
+                        Reward
+                      </p>
+                    </div>
+                    <div className='w-full'>
+                      <div className='flex items-center gap-2 w-fit cursor-pointer'>
+                        <Image
+                          src={cueCurrency}
+                          alt='cue currency icon with gradient color'
+                        />
+
+                        <span className='text-xl md:text-2xl leading-[32px] font-semibold'>
+                          {fields?.Reward
+                            ? fields.Reward.toLocaleString()
+                            : '18,400'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submission Form */}
+                  <div className='space-y-4 p-4 bg-[#111111] rounded-lg border border-[#1F1F1F]'>
+                    <h3 className='text-white font-semibold text-sm'>
+                      Submit Your Work
+                    </h3>
+
+                    {submissionError && (
+                      <div className='border border-red-500/20 bg-red-500/10 p-3 rounded-lg'>
+                        <span className='text-red-400 text-sm'>
+                          {submissionError}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className='input-style'>
+                      <Label htmlFor='submission-url' className=''>
+                        Submission URL *
+                      </Label>
+                      <Input
+                        type='url'
+                        id='submission-url'
+                        placeholder='https://github.com/your-repo/your-submission'
+                        value={submissionUrl}
+                        onChange={(e) => {
+                          setSubmissionUrl(e.target.value);
+                          if (urlError) setUrlError('');
+                          if (submissionError) setSubmissionError('');
+                        }}
+                        className={urlError ? 'border-red-500' : ''}
+                        disabled={isSubmitting}
+                      />
+                      {urlError && (
+                        <span className='text-red-500 text-xs mt-1'>
+                          {urlError}
+                        </span>
+                      )}
+                      <div className='text-xs text-[#666] mt-1 space-y-1'>
+                        <p>
+                          Provide a link to your completed work. Accepted
+                          platforms:
+                        </p>
+                        <ul className='list-disc list-inside text-[10px] ml-2 space-y-0.5'>
+                          <li>GitHub/GitLab repositories</li>
+                          <li>Live demos (Vercel, Netlify, etc.)</li>
+                          <li>Code playgrounds (CodePen, CodeSandbox)</li>
+                          <li>Design files (Figma, Dribbble)</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className='flex items-center justify-between mb-2'>
+                        <Label className='text-sm font-medium text-auth-text'>
+                          Comments (Optional)
+                        </Label>
+                        <span className='text-xs text-[#666]'>
+                          {comments.length}/500
+                        </span>
+                      </div>
+                      <CustomTextareaToolbar
+                        value={comments}
+                        onChange={(value) => {
+                          if (value.length <= 500) {
+                            setComments(value);
+                          }
+                        }}
+                        disabled={isSubmitting}
+                      />
+                      <div className='text-xs text-[#666] mt-1'>
+                        <p>Add any additional notes about your submission:</p>
+                        <ul className='list-disc list-inside text-[10px] ml-2 mt-1 space-y-0.5'>
+                          <li>Implementation approach</li>
+                          <li>Technologies used</li>
+                          <li>Challenges faced</li>
+                          <li>Special features or considerations</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Submission Preview */}
+                    {(submissionUrl.trim() || comments.trim()) &&
+                      !submissionError && (
+                        <div className='space-y-2 p-3 bg-[#0A0A0A] rounded-lg border border-[#1F1F1F]'>
+                          <h4 className='text-white font-medium text-xs'>
+                            Submission Preview
+                          </h4>
+                          {submissionUrl.trim() && (
+                            <div>
+                              <span className='text-[#666] text-xs'>URL:</span>
+                              <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white break-all'>
+                                {submissionUrl}
+                              </div>
+                            </div>
+                          )}
+                          {comments.trim() && (
+                            <div>
+                              <span className='text-[#666] text-xs'>
+                                Comments:
+                              </span>
+                              <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white whitespace-pre-wrap'>
+                                {comments.length > 100
+                                  ? comments.substring(0, 100) + '...'
+                                  : comments}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                   </div>
                 </div>
 
-                <CustomTextareaToolbar />
-              </div>
+                {/* Buttons */}
+                <div className='flex gap-4 justify-between items-center md:justify-end w-full mt-8'>
+                  <Button
+                    className='btn-secondary-p w-fit'
+                    onClick={handleCancel}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
 
-              {/* Buttons */}
-              <div className='flex gap-4 justify-between items-center md:justify-end w-full mt-8'>
-                <Button className='btn-secondary-p w-fit'>Cancel</Button>
-
-                <Button
-                  className='btn-main-p w-fit'
-                  onClick={() => {
-                    setOpenBountyDetails(false);
-                    setOpenSuccess(true);
-                  }}
-                >
-                  Submit
-                </Button>
+                  <Button
+                    className='btn-main-p w-fit relative'
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !isFormValid || hasSubmitted}
+                  >
+                    {isSubmitting && (
+                      <div className='absolute inset-0 flex items-center justify-center'>
+                        <div className='w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin'></div>
+                      </div>
+                    )}
+                    <span
+                      className={isSubmitting ? 'opacity-0' : 'opacity-100'}
+                    >
+                      {hasSubmitted ? 'Already Submitted' : 'Submit'}
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </DialogContent>
       </Dialog>
 
       <Dialog open={openSuccess} onOpenChange={setOpenSuccess}>
         <DialogContent
           aria-describedby={undefined}
-          className='bg-[#0A0A0A] p-[20px] rounded-[12px] max-h-[292px] w-[70%] md:w-[35%]! max-w-[318px]! border-0 shadow-2xl'
+          className='bg-[#0A0A0A] p-[20px] rounded-[12px] w-[70%] md:w-[35%]! max-w-[318px]! border-0 shadow-2xl'
         >
           <VisuallyHidden>
             <DialogTitle>Bounty Submission Success</DialogTitle>
@@ -295,15 +602,63 @@ function BountyCard({ category = 'development' }: BountyCardProps) {
               />
             </div>
             <h1 className='text-white text-xl leading-[100%] font-semibold mb-2'>
-              Submitted
+              Submission Successful!
             </h1>
-            <p className='text-xs text-auth-text leading-[100%] '>
-              Your bounty has been successfully submitted and you have been
-              rewarded C18,400
+            <p className='text-xs text-auth-text leading-[100%] mb-4'>
+              Your bounty submission has been received and is under review. You
+              will be notified once it&apos;s approved.
             </p>
 
+            {/* {submissionId && (
+              <div className='bg-[#111] p-3 rounded-lg mb-4'>
+                <p className='text-xs text-[#666] mb-1'>Submission ID:</p>
+                <p className='text-xs text-white font-mono'>{submissionId}</p>
+              </div>
+            )} */}
+
+            <div className='bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] p-4 rounded-lg mb-4'>
+              <div className='flex items-center justify-center gap-2 mb-2'>
+                <span className='text-sm font-semibold text-white flex items-center gap-1'>
+                  Potential Reward:
+                  <Image
+                    src={cueCurrency}
+                    alt='cue currency icon'
+                    width={20}
+                    height={20}
+                  />
+                  {fields?.Reward ? fields.Reward.toLocaleString() : '18,400'}
+                </span>
+              </div>
+              <p className='text-xs text-[#888] text-center'>
+                Reward will be distributed upon approval
+              </p>
+            </div>
+
+            {/* {submissionUrl && (
+              <div className='mt-4 p-3 bg-[#111111] rounded border border-[#1F1F1F]'>
+                <p className='text-xs text-auth-text mb-1'>Submitted:</p>
+                <div className='flex items-center gap-2'>
+                  <ExternalLink className='h-3 w-3 text-[#666]' />
+                  <span className='text-xs text-white truncate'>
+                    {submissionUrl}
+                  </span>
+                </div>
+              </div>
+            )} */}
+
             <div className='w-full text-center'>
-              <Button className='btn-main-p my-8'>Claim C 18400 Reward</Button>
+              <Button
+                className='btn-main-p '
+                onClick={() => {
+                  setOpenSuccess(false);
+                  // Reset form for potential future submissions to other bounties
+                  setSubmissionUrl('');
+                  setComments('');
+                  // setSubmissionId(null);
+                }}
+              >
+                Close
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -4,10 +4,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TAB_ITEMS = [
   { label: 'All', value: 'all', url: '' },
-  { label: 'Shirts', value: 'shirts', url: '' },
-  { label: 'MacBooks', value: 'macbooks', url: '' },
-  { label: 'Laptops', value: 'laptops', url: '' },
-  { label: 'iWatches', value: 'iwatches', url: '' },
+  { label: 'Electronics', value: 'Electronics', url: '' },
+  { label: 'Clothings', value: 'Clothings', url: '' },
+  { label: 'Others', value: 'Others', url: '' },
 ];
 
 interface TabBarProps {

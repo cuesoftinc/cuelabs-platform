@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 // If shadcn/ui is installed, import Button and other primitives from it
 // import { Button } from "@/components/ui/button";
 
@@ -104,8 +104,17 @@ function formatText(
   return { text, newStart, newEnd };
 }
 
-function CustomTextareaToolbar() {
-  const [value, setValue] = useState('');
+interface CustomTextareaToolbarProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  disabled?: boolean;
+}
+
+function CustomTextareaToolbar({
+  value = '',
+  onChange,
+  disabled = false,
+}: CustomTextareaToolbarProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleFormat = (action: string) => {
@@ -118,7 +127,7 @@ function CustomTextareaToolbar() {
       selectionEnd,
       action,
     );
-    setValue(text);
+    onChange?.(text);
     // Set selection after update
     setTimeout(() => {
       textarea.focus();
@@ -134,19 +143,23 @@ function CustomTextareaToolbar() {
       <div className='border border-auth-text! text-16c text-[#454545] rounded-[8px] min-h-[80px] p-4'>
         <textarea
           ref={textareaRef}
-          className='h-full w-full focus-visible:border-0 focus-visible:ring-0 outline-none'
+          className='h-full w-full focus-visible:border-0 focus-visible:ring-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed'
           placeholder="A little about the specifications you'll be working with."
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => onChange?.(e.target.value)}
+          disabled={disabled}
         />
         <div className='flex items-center pt-2'>
           {toolbarIcons.map((item) => (
             <button
               key={item.label}
               type='button'
-              className='text-[#98A2B3] hover:text-white p-1 rounded cursor-pointer w-[32px] h-[32px] flex items-center justify-center'
+              className={`text-[#98A2B3] hover:text-white p-1 rounded cursor-pointer w-[32px] h-[32px] flex items-center justify-center ${
+                disabled ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
               aria-label={item.label}
-              onClick={() => handleFormat(item.action)}
+              onClick={() => !disabled && handleFormat(item.action)}
+              disabled={disabled}
             >
               {item.icon}
             </button>

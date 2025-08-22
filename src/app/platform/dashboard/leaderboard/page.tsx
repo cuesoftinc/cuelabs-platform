@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 
 import { ArrowUpRight } from 'lucide-react';
@@ -18,11 +20,63 @@ import {
 
 import cueCurrency from '@/svgs/cue-currency-dashboard.svg';
 import chart from '@/svgs/overview-chart.svg';
-import LeaderboardTable from '@/components/custom/dashboard/leaderboard-table';
+import FullLeaderboardTable from '@/components/custom/dashboard/full-leaderboard-table';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
 import { PiCalendarBlankFill } from 'react-icons/pi';
+import { useUsers } from '@/hooks/queries/useUsers';
+import { useAuth } from '@/hooks/queries/useAuth';
+import CustomSpinner from '@/components/custom/custom-spinner';
+
+// Helper function to get ordinal suffix
+const getOrdinalSuffix = (num: number): string => {
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) {
+    return 'st';
+  }
+  if (j === 2 && k !== 12) {
+    return 'nd';
+  }
+  if (j === 3 && k !== 13) {
+    return 'rd';
+  }
+  return 'th';
+};
 
 function LeaderboardPage() {
+  const { user: currentUser } = useAuth();
+  const { data: usersData, isLoading: isLoadingUsers } = useUsers();
+
+  // Calculate total earnings across all users
+  const totalEarnings = usersData?.records?.reduce((sum, user) => {
+    return sum + (user.fields['Total Earnings'] || 0);
+  }, 0) || 0;
+
+  // Find current user's rank
+  const getUserRank = () => {
+    if (!currentUser || !usersData?.records) return null;
+    
+    const sortedUsers = [...usersData.records].sort((a, b) => 
+      (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0)
+    );
+    
+    const userIndex = sortedUsers.findIndex(user => user.id === currentUser.id);
+    return userIndex >= 0 ? userIndex + 1 : null;
+  };
+
+  const userRank = getUserRank();
+  const userRankPercentage = usersData?.records ? 
+    Math.round(((userRank || 0) / usersData.records.length) * 100) : 0;
+
+  if (isLoadingUsers) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <CustomSpinner />
+        <span className="ml-2 text-white">Loading leaderboard data...</span>
+      </div>
+    );
+  }
+
   return (
     <div className='p-5 md:p-9 lg:p-12 w-full'>
       {/* Heading */}
@@ -49,11 +103,11 @@ function LeaderboardPage() {
                 className='w-[23.1px] h-[18.73px]'
               />
               <span className='text-white text-lg md:text-xl lg:text-2xl font-semibold'>
-                18,400
+                {totalEarnings.toLocaleString()}
               </span>
 
               <div className='active-status'>
-                <span>16.8%</span>
+                <span>{usersData?.records?.length || 0} Users</span>
                 <ArrowUpRight className='w-3 h-3' />
               </div>
             </CardDescription>
@@ -72,7 +126,7 @@ function LeaderboardPage() {
           </CardContent>
         </Card>
 
-        <div className='flex flex-col gap-6 md:w-[36%] max-w-[375px]'>
+        {/* <div className='flex flex-col gap-6 md:w-[36%] max-w-[375px]'>
           <Card className='card-container p-4 lg:p-6 h-[115px]'>
             <CardContent className='p-0'>
               <div className='text-dashboard-nav flex gap-1 items-center font-medium text-xs'>
@@ -80,7 +134,7 @@ function LeaderboardPage() {
                 <span className=''>Wallet Balance</span>
               </div>
 
-              {/* <div> */}
+            
               <div className='flex items-center gap-1  mt-4'>
                 <Image
                   src={cueCurrency}
@@ -88,10 +142,10 @@ function LeaderboardPage() {
                   className='w-[23.1px] h-[18.73px]'
                 />
                 <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
-                  100,400
+                  {currentUser?.fields['Wallet Balance']?.toLocaleString() || '0'}
                 </span>
               </div>
-              {/* </div> */}
+            
             </CardContent>
           </Card>
 
@@ -108,27 +162,25 @@ function LeaderboardPage() {
                     You&apos;re in{' '}
                   </span>
                   <div className='active-status'>
-                    <span>Top 3%</span>
+                    <span>Top {userRankPercentage}%</span>
                   </div>
                 </div>
               </div>
 
-              {/* <div> */}
               <div className='mt-4'>
                 <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
-                  13th
+                  {userRank ? `${userRank}${getOrdinalSuffix(userRank)}` : 'N/A'}
                 </span>
               </div>
-              {/* </div> */}
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
 
       <div className='mt-8'>
         {/* <h2 className='text-2xl leading-[32px] font-semibold'>Leaderboard</h2> */}
         <div className='my-4'>
-          <LeaderboardTable />
+          <FullLeaderboardTable />
         </div>
       </div>
     </div>

@@ -136,64 +136,68 @@ export const useFetchUserOrders = (userId: string) => {
       // First, get the user to find their order IDs
       const user = await airtableClient.getRecord('Users', userId);
       const orderIds = user.fields.Orders || [];
-      
+
       if (orderIds.length === 0) {
         return { records: [] };
       }
-      
+
       // Fetch all orders for this user
       const orderRecordsQuery = orderIds
         .map((id: string) => `RECORD_ID()="${id}"`)
         .join(',');
-      
+
       const orders = await airtableClient.getRecords('Orders', {
         filterByFormula: `OR(${orderRecordsQuery})`,
       });
-      
+
       // For each order, fetch the order items and market items
       const ordersWithDetails = await Promise.all(
         orders.records.map(async (order) => {
           const orderItemIds = order.fields.Items || [];
-          
+
           if (orderItemIds.length === 0) {
             return { ...order, orderItems: [], marketItems: [] };
           }
-          
+
           // Fetch order items
           const orderItemRecordsQuery = orderItemIds
             .map((id: string) => `RECORD_ID()="${id}"`)
             .join(',');
-          
+
           const orderItems = await airtableClient.getRecords('Order Items', {
             filterByFormula: `OR(${orderItemRecordsQuery})`,
           });
-          
+
           // Fetch market items for each order item
           const marketItemIds = orderItems.records.flatMap(
-            (orderItem) => orderItem.fields.Item || []
+            (orderItem) => orderItem.fields.Item || [],
           );
-          
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let marketItems: any[] = [];
           if (marketItemIds.length > 0) {
             const marketItemRecordsQuery = marketItemIds
               .map((id: string) => `RECORD_ID()="${id}"`)
               .join(',');
-            
-            const marketItemsResponse = await airtableClient.getRecords('Marketplace', {
-              filterByFormula: `OR(${marketItemRecordsQuery})`,
-            });
-            
+
+            const marketItemsResponse = await airtableClient.getRecords(
+              'Marketplace',
+              {
+                filterByFormula: `OR(${marketItemRecordsQuery})`,
+              },
+            );
+
             marketItems = marketItemsResponse.records;
           }
-          
+
           return {
             ...order,
             orderItems: orderItems.records,
             marketItems,
           };
-        })
+        }),
       );
-      
+
       return { records: ordersWithDetails };
     },
     enabled: !!userId,

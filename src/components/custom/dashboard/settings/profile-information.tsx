@@ -17,7 +17,7 @@ function ProfileInformation() {
   const { user } = useAuth();
   const updateUserMutation = useUpdateUser();
   const dispatch = useAppDispatch();
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -40,7 +40,7 @@ function ProfileInformation() {
       const nameParts = fullName.split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
-      
+
       setFormData({
         firstName,
         lastName,
@@ -60,30 +60,30 @@ function ProfileInformation() {
   }, [newPhotoPreview]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleSaveChanges = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     setShowFeedback(null); // Clear any existing feedback
-    
+
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-      
-      const updatedUserData = await updateUserMutation.mutateAsync({
+
+      await updateUserMutation.mutateAsync({
         userId: user.id,
         userData: {
           Name: fullName,
           Email: formData.email,
           Address: formData.address,
-        }
+        },
       });
-      
+
       // Update the user in the auth store with the new data
       const updatedUser = {
         ...user,
@@ -92,31 +92,30 @@ function ProfileInformation() {
           Name: fullName,
           Email: formData.email,
           Address: formData.address,
-        }
+        },
       };
-      
+
       dispatch(updateUser(updatedUser));
-      
+
       // Show success feedback
       setShowFeedback({
         type: 'success',
-        message: 'Profile updated successfully!'
+        message: 'Profile updated successfully!',
       });
-      
+
       // Auto-hide success message after 3 seconds
       setTimeout(() => {
         setShowFeedback(null);
       }, 3000);
-      
     } catch (error) {
       console.error('Error updating user:', error);
-      
+
       // Show error feedback
       setShowFeedback({
         type: 'error',
-        message: `Error saving changes: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Error saving changes: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
-      
+
       // Auto-hide error message after 5 seconds
       setTimeout(() => {
         setShowFeedback(null);
@@ -132,12 +131,12 @@ function ProfileInformation() {
     if (newPhotoPreview) {
       return newPhotoPreview;
     }
-    
+
     // Show existing user photo
     if (user?.fields.Attachments && user.fields.Attachments.length > 0) {
       return user.fields.Attachments[0].url;
     }
-    
+
     return AvatarCircle;
   };
 
@@ -145,14 +144,16 @@ function ProfileInformation() {
     fileInputRef.current?.click();
   };
 
-  const clearPhotoPreview = () => {
-    if (newPhotoPreview) {
-      URL.revokeObjectURL(newPhotoPreview);
-      setNewPhotoPreview(null);
-    }
-  };
+  // const clearPhotoPreview = () => {
+  //   if (newPhotoPreview) {
+  //     URL.revokeObjectURL(newPhotoPreview);
+  //     setNewPhotoPreview(null);
+  //   }
+  // };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
@@ -160,7 +161,7 @@ function ProfileInformation() {
     if (!file.type.startsWith('image/')) {
       setShowFeedback({
         type: 'error',
-        message: 'Please select a valid image file'
+        message: 'Please select a valid image file',
       });
       setTimeout(() => setShowFeedback(null), 5000);
       return;
@@ -170,7 +171,7 @@ function ProfileInformation() {
     if (file.size > 5 * 1024 * 1024) {
       setShowFeedback({
         type: 'error',
-        message: 'Image size must be less than 5MB'
+        message: 'Image size must be less than 5MB',
       });
       setTimeout(() => setShowFeedback(null), 5000);
       return;
@@ -185,7 +186,7 @@ function ProfileInformation() {
 
     try {
       // Convert file to base64 for Airtable
-      const base64 = await new Promise<string>((resolve) => {
+      await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = () => {
           const result = reader.result as string;
@@ -198,33 +199,32 @@ function ProfileInformation() {
 
       // For now, we'll use a simpler approach - just update the user
       // Airtable will handle the attachment processing
-      const updatedUserData = await updateUserMutation.mutateAsync({
+      await updateUserMutation.mutateAsync({
         userId: user.id,
         userData: {
           // We'll need to implement proper file upload to Airtable
           // For now, this is a placeholder
-        }
+        },
       });
 
       // For now, we'll just show a success message
       // TODO: Implement proper file upload to Airtable
       setShowFeedback({
         type: 'success',
-        message: 'Photo upload feature coming soon!'
+        message: 'Photo upload feature coming soon!',
       });
 
       setShowFeedback({
         type: 'success',
-        message: 'Profile photo updated successfully!'
+        message: 'Profile photo updated successfully!',
       });
 
       setTimeout(() => setShowFeedback(null), 3000);
-
     } catch (error) {
       console.error('Error uploading photo:', error);
       setShowFeedback({
         type: 'error',
-        message: `Error uploading photo: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Error uploading photo: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
       setTimeout(() => setShowFeedback(null), 5000);
     } finally {
@@ -255,12 +255,12 @@ function ProfileInformation() {
         </div>
         <div className='flex gap-2 items-center mt-2'>
           <div className='relative'>
-            <Image 
-              src={getUserAvatar()} 
-              alt={`${user.fields.Name} avatar`} 
-              width={48} 
+            <Image
+              src={getUserAvatar()}
+              alt={`${user.fields.Name} avatar`}
+              width={48}
               height={48}
-              className="w-[48px] h-[48px] rounded-full object-cover"
+              className='w-[48px] h-[48px] rounded-full object-cover'
             />
             {isUploadingPhoto && (
               <div className='absolute inset-0 bg-black/50 rounded-full flex items-center justify-center'>
@@ -268,21 +268,21 @@ function ProfileInformation() {
               </div>
             )}
           </div>
-          <span 
+          <span
             className='gradient-bg-text text-[10px] leading-[14px] font-medium cursor-pointer hover:opacity-80'
             onClick={handlePhotoChange}
           >
             Change Photo
           </span>
         </div>
-        
+
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
-          type="file"
-          accept="image/*"
+          type='file'
+          accept='image/*'
           onChange={handleFileSelect}
-          className="hidden"
+          className='hidden'
         />
       </div>
       <div className=' w-full flex flex-col gap-6 mt-4'>
@@ -357,18 +357,22 @@ function ProfileInformation() {
           'Save Changes'
         )}
       </Button>
-      
+
       {showFeedback && (
-        <div className={`mt-4 p-3 border rounded-lg ${
-          showFeedback.type === 'success' 
-            ? 'bg-green-50 border-green-200' 
-            : 'bg-red-50 border-red-200'
-        }`}>
-          <p className={`text-sm ${
-            showFeedback.type === 'success' 
-              ? 'text-green-700' 
-              : 'text-red-700'
-          }`}>
+        <div
+          className={`mt-4 p-3 border rounded-lg ${
+            showFeedback.type === 'success'
+              ? 'bg-green-50 border-green-200'
+              : 'bg-red-50 border-red-200'
+          }`}
+        >
+          <p
+            className={`text-sm ${
+              showFeedback.type === 'success'
+                ? 'text-green-700'
+                : 'text-red-700'
+            }`}
+          >
             {showFeedback.message}
           </p>
         </div>

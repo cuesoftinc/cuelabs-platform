@@ -54,7 +54,7 @@ function CartPage() {
       setDirectOrderImageError(false);
       setDirectOrderRetryCount(0);
     }
-  }, [directOrderItem?.fields.Attachments]);
+  }, [directOrderItem]);
 
   const handleCheckout = async () => {
     setIsProcessingOrder(true);

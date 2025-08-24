@@ -27,7 +27,11 @@ function ProjectDetailsPage() {
   );
   const fields = data?.fields;
   // console.log(data);
-  const bounties = (fields?.Bounties as Bounty[]) || [];
+  
+  // Memoize bounties to prevent unnecessary re-renders
+  const bounties = useMemo(() => {
+    return (fields?.Bounties as Bounty[]) || [];
+  }, [fields?.Bounties]);
 
   // Group bounties by status and filter by search term
   const groupedBounties = useMemo(() => {

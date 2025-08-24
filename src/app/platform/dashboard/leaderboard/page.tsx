@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 
 import { ArrowUpRight } from 'lucide-react';
 
 import { PiTimerFill } from 'react-icons/pi';
-import { IoIosStar } from 'react-icons/io';
+// import { IoIosStar } from 'react-icons/io';
 
 import {
   Card,
@@ -24,53 +24,41 @@ import FullLeaderboardTable from '@/components/custom/dashboard/full-leaderboard
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
 import { PiCalendarBlankFill } from 'react-icons/pi';
 import { useUsers } from '@/hooks/queries/useUsers';
-import { useAuth } from '@/hooks/queries/useAuth';
+// import { useAuth } from '@/hooks/queries/useAuth';
 import CustomSpinner from '@/components/custom/custom-spinner';
 
-// Helper function to get ordinal suffix
-const getOrdinalSuffix = (num: number): string => {
-  const j = num % 10;
-  const k = num % 100;
-  if (j === 1 && k !== 11) {
-    return 'st';
-  }
-  if (j === 2 && k !== 12) {
-    return 'nd';
-  }
-  if (j === 3 && k !== 13) {
-    return 'rd';
-  }
-  return 'th';
-};
-
 function LeaderboardPage() {
-  const { user: currentUser } = useAuth();
+  // const { user: currentUser } = useAuth();
   const { data: usersData, isLoading: isLoadingUsers } = useUsers();
 
   // Calculate total earnings across all users
-  const totalEarnings = usersData?.records?.reduce((sum, user) => {
-    return sum + (user.fields['Total Earnings'] || 0);
-  }, 0) || 0;
+  const totalEarnings =
+    usersData?.records?.reduce((sum, user) => {
+      return sum + (user.fields['Total Earnings'] || 0);
+    }, 0) || 0;
 
   // Find current user's rank
-  const getUserRank = () => {
-    if (!currentUser || !usersData?.records) return null;
-    
-    const sortedUsers = [...usersData.records].sort((a, b) => 
-      (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0)
-    );
-    
-    const userIndex = sortedUsers.findIndex(user => user.id === currentUser.id);
-    return userIndex >= 0 ? userIndex + 1 : null;
-  };
+  // const getUserRank = () => {
+  //   if (!currentUser || !usersData?.records) return null;
 
-  const userRank = getUserRank();
-  const userRankPercentage = usersData?.records ? 
-    Math.round(((userRank || 0) / usersData.records.length) * 100) : 0;
+  //   const sortedUsers = [...usersData.records].sort(
+  //     (a, b) =>
+  //       (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0),
+  //   );
+
+  //   const userIndex = sortedUsers.findIndex(
+  //     (user) => user.id === currentUser.id,
+  //   );
+  //   return userIndex >= 0 ? userIndex + 1 : null;
+  // };
+
+  // const userRank = getUserRank();
+  // const userRankPercentage = usersData?.records ?
+  //   Math.round(((userRank || 0) / usersData.records.length) * 100) : 0;
 
   if (isLoadingUsers) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <CustomSpinner />
       </div>
     );

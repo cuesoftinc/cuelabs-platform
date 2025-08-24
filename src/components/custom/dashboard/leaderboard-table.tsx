@@ -17,12 +17,13 @@ import {
 import AvatarCircle from '@/images/avatar-circle.png';
 // import CueCurrency from '@/svgs/cue-currency-dashboard.svg';
 import CueCurrencyIcon from './cue-currency-icon';
-import { PiCalendarBlankFill } from 'react-icons/pi';
+// import { PiCalendarBlankFill } from 'react-icons/pi';
 import { useUsers } from '@/hooks/queries/useUsers';
 import CustomSpinner from '@/components/custom/custom-spinner';
+import { User } from '@/types/users';
 
 // Helper function to get user avatar
-const getUserAvatar = (user: any) => {
+const getUserAvatar = (user: User) => {
   if (user.fields.Attachments && user.fields.Attachments.length > 0) {
     return user.fields.Attachments[0].url;
   }
@@ -31,12 +32,20 @@ const getUserAvatar = (user: any) => {
 
 function LeaderboardTable() {
   // Fetch all users
-  const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useUsers();
+  const {
+    data: usersData,
+    isLoading: isLoadingUsers,
+    error: usersError,
+  } = useUsers();
 
   // Sort users by wallet balance (earnings) in descending order and take top 10
-  const topUsers = usersData?.records
-    ?.sort((a, b) => (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0))
-    .slice(0, 10) || [];
+  const topUsers =
+    usersData?.records
+      ?.sort(
+        (a, b) =>
+          (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0),
+      )
+      .slice(0, 10) || [];
 
   if (isLoadingUsers) {
     return (
@@ -86,23 +95,23 @@ function LeaderboardTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {topUsers.map((user, idx) => {
+          {topUsers.map((user) => {
             const isActive = user.fields.Status === 'Active';
             const totalEarnings = user.fields['Total Earnings'] || 0;
             const projectCount = user.fields.Projects?.length || 0;
-            
+
             return (
               <TableRow
                 key={user.id}
                 className={`font-medium text-[10px] leading-14px hover:bg-[#1f1f1f]/50 ${isActive ? 'bg-[#0F0F0F]' : ''}`}
               >
                 <TableCell className='flex items-center gap-2'>
-                  <Image 
-                    src={getUserAvatar(user)} 
-                    alt={`${user.fields.Name} avatar`} 
-                    width={16} 
+                  <Image
+                    src={getUserAvatar(user)}
+                    alt={`${user.fields.Name} avatar`}
+                    width={16}
                     height={16}
-                    className="rounded-full"
+                    className='rounded-full'
                   />
                   <span>{user.fields.Name}</span>
                 </TableCell>
@@ -112,8 +121,12 @@ function LeaderboardTable() {
                   {projectCount}
                 </TableCell>
                 <TableCell>
-                  <div className={`flex items-center gap-1 ${user.fields.Status === 'Active' ? 'active-status' : (user.fields.Status === 'Inactive' ? 'inactive-status' : 'canceled-status')} w-fit`}>
-                    <div className={`w-[3px] h-[3px] rounded-full inline-block ${user.fields.Status === 'Active' ? 'bg-[#05C168]' : (user.fields.Status === 'Inactive' ? 'bg-[#FFB016]' : 'bg-[#FF5A65]')}`} />
+                  <div
+                    className={`flex items-center gap-1 ${user.fields.Status === 'Active' ? 'active-status' : user.fields.Status === 'Inactive' ? 'inactive-status' : 'canceled-status'} w-fit`}
+                  >
+                    <div
+                      className={`w-[3px] h-[3px] rounded-full inline-block ${user.fields.Status === 'Active' ? 'bg-[#05C168]' : user.fields.Status === 'Inactive' ? 'bg-[#FFB016]' : 'bg-[#FF5A65]'}`}
+                    />
                     <span>{user.fields.Status}</span>
                   </div>
                 </TableCell>

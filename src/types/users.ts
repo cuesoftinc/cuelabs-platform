@@ -39,6 +39,7 @@ export interface UserFields {
   Rank?: number;
   Address?: string;
   Projects?: Project[] | string[];
+  Orders?: string[];
   'Created At': string;
   'Modified At': string;
   [key: string]: any; // Allow additional unknown fields

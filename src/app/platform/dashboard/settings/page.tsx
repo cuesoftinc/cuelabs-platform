@@ -46,7 +46,7 @@ export default function SettingsPage() {
           onValueChange={setActiveSetting}
           className={'w-full'}
         >
-          <TabsList className='flex justify-start md:gap-2 bg-[#141414] p-2 h-[48px] w-[65%] xl:w-[58%] lg:max-w-[600px] overflow-x-auto overflow-y-hidden'>
+          <TabsList className='flex justify-start md:gap-2 bg-[#141414] p-2 h-[48px] w-full md:w-[65%] xl:w-[58%] lg:max-w-[600px] overflow-x-auto overflow-y-hidden'>
             {tabItems.map((tab) => (
               <TabsTrigger
                 key={tab.value}

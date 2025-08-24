@@ -72,7 +72,6 @@ function LeaderboardPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <CustomSpinner />
-        <span className="ml-2 text-white">Loading leaderboard data...</span>
       </div>
     );
   }

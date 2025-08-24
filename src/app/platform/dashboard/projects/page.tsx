@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
+import StatusFilter from '@/components/custom/dashboard/projects/status-filter';
 import { columns } from '@/components/custom/dashboard/projects/columns';
 import { DataTable } from '@/components/custom/dashboard/projects/data-table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -39,13 +40,65 @@ import CustomSpinner from '@/components/custom/custom-spinner';
 // ];
 
 function ProjectsPage() {
-  // const params: Record<string, string> = {
-  //   view: 'Grid view',
-  //   maxRecords: '5',
-  // };
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  
   const { data: projectsData, isLoading } = useFetchProjects();
 
-  // console.log('Projects Data:', projectsData);
+  // Calculate project statistics
+  const projectStats = useMemo(() => {
+    if (!projectsData?.records) {
+      return { total: 0, inProgress: 0, completed: 0, new: 0, todo: 0 };
+    }
+
+    const stats = projectsData.records.reduce((acc, project) => {
+      acc.total++;
+      const status = project.fields.Status;
+      
+      switch (status) {
+        case 'In progress':
+          acc.inProgress++;
+          break;
+        case 'Done':
+          acc.completed++;
+          break;
+        case 'New':
+          acc.new++;
+          break;
+        case 'Todo':
+          acc.todo++;
+          break;
+        default:
+          break;
+      }
+      
+      return acc;
+    }, { total: 0, inProgress: 0, completed: 0, new: 0, todo: 0 });
+
+    return stats;
+  }, [projectsData]);
+
+  // Filter projects based on search and status
+  const filteredProjects = useMemo(() => {
+    if (!projectsData?.records) return [];
+
+    let filtered = projectsData.records;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(project =>
+        project.fields.Name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.fields.Description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(project => project.fields.Status === statusFilter);
+    }
+
+    return filtered;
+  }, [projectsData, searchQuery, statusFilter]);
 
   if (isLoading) {
     return <CustomSpinner />;
@@ -72,7 +125,7 @@ function ProjectsPage() {
             </h3>
 
             <p className='text-white text-3xl lg:text-[36px] leading-[56px] font-semibold'>
-              20
+              {projectStats.total}
             </p>
           </CardContent>
         </Card>
@@ -84,7 +137,7 @@ function ProjectsPage() {
             </h3>
 
             <p className='text-white text-3xl lg:text-[36px] leading-[56px] font-semibold'>
-              15
+              {projectStats.inProgress}
             </p>
           </CardContent>
         </Card>
@@ -96,7 +149,7 @@ function ProjectsPage() {
             </h3>
 
             <p className='text-white text-3xl lg:text-[36px] leading-[56px] font-semibold'>
-              18
+              {projectStats.completed}
             </p>
           </CardContent>
         </Card>
@@ -114,15 +167,18 @@ function ProjectsPage() {
               <Input
                 type='text'
                 placeholder='Search for projects...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className='pl-10 border-auth-border bg-darkmode-bg text-xs rounded-[4px]'
               />
             </div>
           </div>
 
           <div className='flex items-center gap-4 md:justify-between md:w-[30%] xl:w-[20%]'>
-            <CustomSelectFilter>
-              <span>Status</span>
-            </CustomSelectFilter>
+            <StatusFilter 
+              value={statusFilter} 
+              onValueChange={setStatusFilter} 
+            />
 
             <CustomSelectFilter>
               <div className='flex items-center gap-0.5'>
@@ -134,7 +190,7 @@ function ProjectsPage() {
         </div>
 
         <div className='mt-6'>
-          <DataTable columns={columns} data={projectsData?.records || []} />
+          <DataTable columns={columns} data={filteredProjects} />
         </div>
       </div>
     </div>

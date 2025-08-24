@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import logo from '@/svgs/cuesoft-logo.svg';
 import cueIcon from '@/svgs/cuesoft-icon.svg';
+import { useAuth } from '@/hooks/queries/useAuth';
 
 import { RiHomeFill } from 'react-icons/ri';
 import { IoIosStar } from 'react-icons/io';
@@ -19,6 +20,25 @@ import { ArrowRight, Menu, X } from 'lucide-react';
 function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(true); // collapsed by default on mobile
+  const { user } = useAuth();
+
+  // Helper function to get user initials
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Helper function to get user avatar
+  const getUserAvatar = () => {
+    if (user?.fields.Attachments && user.fields.Attachments.length > 0) {
+      return user.fields.Attachments[0].url;
+    }
+    return null;
+  };
 
   const navLinks = [
     {
@@ -176,16 +196,28 @@ function Sidebar() {
           <div
             className={`flex items-center gap-3 mb-4 w-full ${collapsed ? 'flex-col gap-1 lg:flex-row' : 'flex-row'} `}
           >
-            <div className='w-10 h-10 md:w-[32px] md:h-[32px] bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold'>
-              O
-            </div>
+            {getUserAvatar() ? (
+              <Image
+                src={getUserAvatar()!}
+                alt={`${user?.fields.Name || 'User'} avatar`}
+                width={40}
+                height={40}
+                className='w-10 h-10 md:w-[32px] md:h-[32px] rounded-full object-cover'
+              />
+            ) : (
+              <div className='w-10 h-10 md:w-[32px] md:h-[32px] bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
+                {user?.fields.Name ? getUserInitials(user.fields.Name) : 'U'}
+              </div>
+            )}
             <div
               className={`${collapsed ? 'hidden lg:block text-center lg:text-left' : ''} `}
             >
               <div className='text-white text-sm font-medium'>
-                Olaife Olawore
+                {user?.fields.Name || 'User'}
               </div>
-              <div className='text-auth-text text-xs'>Account settings</div>
+              <div className='text-auth-text text-xs'>
+                {user?.fields.Email || 'Account settings'}
+              </div>
             </div>
           </div>
           <Button

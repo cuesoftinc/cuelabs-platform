@@ -6,6 +6,7 @@ import {
   logout,
 } from '@/store/slices/authSlice';
 import { useMutation } from '@tanstack/react-query';
+import { User } from '@/types/users';
 
 interface LoginCredentials {
   email: string;
@@ -50,6 +51,13 @@ export const useAuth = () => {
     // Clear any additional cleanup here (e.g., clear cookies)
   };
 
+  const setCurrentUser = (user: User) => {
+    dispatch(loginSuccess({
+      user,
+      token: 'mock-token', // Since we're not using real auth yet
+    }));
+  };
+
   return {
     user,
     isAuthenticated,
@@ -57,6 +65,7 @@ export const useAuth = () => {
     isLoading: isLoading || loginMutation.isPending,
     login: loginMutation.mutate,
     logout: handleLogout,
+    setCurrentUser,
     loginError: loginMutation.error,
   };
 };

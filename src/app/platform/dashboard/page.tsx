@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
@@ -25,14 +27,120 @@ import LeaderboardTable from '@/components/custom/dashboard/leaderboard-table';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
 import { PiCalendarBlankFill } from 'react-icons/pi';
 
+import { useUser, useUsers } from '@/hooks/queries/useUsers';
+import { useAuth } from '@/hooks/queries/useAuth';
+import { useFetchProjects } from '@/hooks/queries/useProjects';
+import CustomSpinner from '@/components/custom/custom-spinner';
+
+// Helper function to get ordinal suffix
+const getOrdinalSuffix = (num: number): string => {
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) {
+    return 'st';
+  }
+  if (j === 2 && k !== 12) {
+    return 'nd';
+  }
+  if (j === 3 && k !== 13) {
+    return 'rd';
+  }
+  return 'th';
+};
+
 function DashboardPage() {
+  const userId = 'recCYY9sSXIeRjlvq'; // Hardcoded user ID for now
+  const { setCurrentUser } = useAuth();
+
+  // Fetch the user data
+  const {
+    data: userData,
+    isLoading: isLoadingUser,
+    error: userError,
+  } = useUser(userId);
+
+  // Fetch all users for metrics calculation
+  const { data: usersData } = useUsers();
+
+  // Fetch all projects
+  const { data: projectsData, isLoading: isLoadingProjects } =
+    useFetchProjects();
+
+  // Get current user's total earnings
+  const totalEarnings = userData?.fields['Total Earnings'] || 0;
+
+  // Find current user's rank
+  const getUserRank = () => {
+    if (!userData || !usersData?.records) return null;
+    
+    const sortedUsers = [...usersData.records].sort((a, b) => 
+      (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0)
+    );
+    
+    const userIndex = sortedUsers.findIndex(user => user.id === userData.id);
+    return userIndex >= 0 ? userIndex + 1 : null;
+  };
+
+  const userRank = getUserRank();
+  const userRankPercentage = usersData?.records ? 
+    Math.round(((userRank || 0) / usersData.records.length) * 100) : 0;
+
+  // Select 3 random projects
+  const getRandomProjects = () => {
+    if (!projectsData?.records || projectsData.records.length === 0) {
+      return [];
+    }
+
+    const shuffled = [...projectsData.records].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  };
+
+  const recommendedProjects = getRandomProjects();
+
+  // Set user as logged in when data is fetched
+  useEffect(() => {
+    if (userData) {
+      setCurrentUser(userData);
+    }
+  }, [userData, setCurrentUser]);
+
+  // Show loading state while fetching user
+  if (isLoadingUser) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <CustomSpinner />
+      </div>
+    );
+  }
+
+  // Show error state if user fetch fails
+  if (userError) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <div className='text-red-500 text-center'>
+          <h2 className='text-xl font-semibold mb-2'>Error Loading User</h2>
+          <p>{userError.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state if no user data yet
+  if (!userData) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <CustomSpinner />
+      </div>
+    );
+  }
+
   return (
     <div className='p-5 md:p-9 lg:p-12 w-full'>
       {/* Heading */}
       <div className='flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between mb-8'>
         <div className=' w-full md:w-fit'>
           <h1 className='text-xl md:text-2xl font-bold text-white'>
-            Welcome Olaife!
+            Welcome {userData.fields.Name}!
           </h1>
           <p className='text-auth-text text-xs md:mt-1'>
             General overview and activity
@@ -63,11 +171,11 @@ function DashboardPage() {
                 className='w-[23.1px] h-[18.73px]'
               />
               <span className='text-white text-lg md:text-xl lg:text-2xl font-semibold'>
-                18,400
+                {totalEarnings.toLocaleString()}
               </span>
 
               <div className='active-status'>
-                <span>16.8%</span>
+                <span>This Week</span>
                 <ArrowUpRight className='w-3 h-3' />
               </div>
             </CardDescription>
@@ -102,7 +210,7 @@ function DashboardPage() {
                   className='w-[23.1px] h-[18.73px]'
                 />
                 <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
-                  100,400
+                  {userData.fields['Wallet Balance']?.toLocaleString() || '0'}
                 </span>
               </div>
               {/* </div> */}
@@ -122,15 +230,14 @@ function DashboardPage() {
                     You&apos;re in{' '}
                   </span>
                   <div className='active-status'>
-                    <span>Top 3%</span>
+                    <span>Top {userRankPercentage}%</span>
                   </div>
                 </div>
               </div>
 
-              {/* <div> */}
               <div className='mt-4'>
                 <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
-                  13th
+                  {userRank ? `${userRank}${getOrdinalSuffix(userRank)}` : 'N/A'}
                 </span>
               </div>
               {/* </div> */}
@@ -145,19 +252,24 @@ function DashboardPage() {
           Recommended Projects
         </h2>
 
-        <div className='mt-4 flex flex-col gap-4 md:flex-row items-center justify-between'>
-          <div className='w-full md:w-[33%]'>
-            <ProjectCard />
+        {isLoadingProjects ? (
+          <div className='mt-4 flex items-center justify-center py-8'>
+            <CustomSpinner />
+            <span className='ml-2 text-white'>Loading projects...</span>
           </div>
-
-          <div className='w-full md:w-[33%]'>
-            <ProjectCard />
+        ) : recommendedProjects.length > 0 ? (
+          <div className='mt-4 grid grid-cols-1 md:grid-cols-3 gap-4'>
+            {recommendedProjects.map((project) => (
+              <div key={project.id} className='h-full'>
+                <ProjectCard project={project} />
+              </div>
+            ))}
           </div>
-
-          <div className='w-full md:w-[33%]'>
-            <ProjectCard />
+        ) : (
+          <div className='mt-4 text-center py-8'>
+            <p className='text-auth-text'>No projects available</p>
           </div>
-        </div>
+        )}
       </div>
 
       <div>

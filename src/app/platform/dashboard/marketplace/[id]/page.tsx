@@ -55,7 +55,7 @@ function ProductDetailsPage() {
       setImageError(false);
       setRetryCount(0);
     }
-  }, [item?.fields.Attachments]);
+  }, [item]);
 
   if (isLoading) {
     return <CustomSpinner />;

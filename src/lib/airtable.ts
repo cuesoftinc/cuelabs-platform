@@ -93,8 +93,8 @@ class AirtableClient {
     tableName: string,
     recordId: string,
     fields: T,
-  ): Promise<{ record: AirtableRecord<T> }> {
-    return this.request<{ record: AirtableRecord<T> }>(
+  ): Promise<AirtableRecord<T>> {
+    return this.request<AirtableRecord<T>>(
       `/${tableName}/${recordId}`,
       {
         method: 'PATCH',

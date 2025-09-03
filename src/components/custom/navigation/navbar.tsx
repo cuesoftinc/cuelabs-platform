@@ -96,8 +96,8 @@ function NavBar({ setOpen }: NavBarProps) {
           variant={'default'}
           className='btn-main hidden lg:flex'
           // onClick={handleButtonClick}
-          onClick={() => router.push('/platform/dashboard')}
-          // onClick={() => router.push('/platform/auth/login')}
+          // onClick={() => router.push('/platform/dashboard')}
+          onClick={() => router.push('/platform/auth/login')}
         >
           Get Started
           <Image src={btnIcon} alt='Arrow Icon' />

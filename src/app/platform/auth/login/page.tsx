@@ -13,9 +13,9 @@ import { useRouter } from 'next/navigation';
 // import { Button } from '@/components/ui/button';
 // import { useRouter } from 'next/navigation';
 
-import googleIcon from '@/svgs/google.svg';
+// import googleIcon from '@/svgs/google.svg';
 import githubIcon from '@/svgs/github.svg';
-import appleIcon from '@/svgs/apple.svg';
+// import appleIcon from '@/svgs/apple.svg';
 
 function LoginPage() {
   // const [showPassword, setShowPassword] = useState(false);
@@ -35,14 +35,14 @@ function LoginPage() {
     // Check if user is already signed in
     getSession().then((session) => {
       if (session) {
-        router.push('/dashboard');
+        router.push('/platform/dashboard');
       }
     });
   }, [router]);
 
   const handleSignIn = (provider: string) => {
     signIn(provider, {
-      callbackUrl: '/dashboard',
+      callbackUrl: '/platform/dashboard',
       redirect: true,
     });
   };
@@ -50,14 +50,14 @@ function LoginPage() {
   return (
     <>
       <h1 className='text-white text-2xl leading-[120%] font-semibold mb-2'>
-        Create your account
+        Sign-in to your account
       </h1>
       <p className='text-16c text-auth-text leading-[140%] '>
         Choose your preferred sign-in method
       </p>
 
       <div className='my-8 w-full flex flex-col gap-4'>
-        <div
+        {/* <div
           onClick={() => handleSignIn('google')}
           className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'
         >
@@ -75,7 +75,7 @@ function LoginPage() {
           <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
             Sign In with Apple
           </span>
-        </div>
+        </div> */}
 
         <div
           onClick={() => handleSignIn('github')}

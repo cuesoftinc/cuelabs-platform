@@ -10,6 +10,7 @@ import btnIcon from '@/svgs/cta-arrow.svg';
 
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const navLinks = [
   {
@@ -39,6 +40,8 @@ function NavBar({ setOpen }: NavBarProps) {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const router = useRouter();
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,10 +61,15 @@ function NavBar({ setOpen }: NavBarProps) {
   //   setOpenMenu((prev) => !prev);
   // };
 
-  const handleButtonClick = () => {
-    setOpenMenu(false);
-    setOpen(true);
-  };
+  // const handleButtonClick = () => {
+  //   setOpenMenu(false);
+  //   setOpen(true);
+  // };
+
+  // const handleWaitlistClick = () => {
+  //   setOpen(true);
+  // };
+  console.log(setOpen);
 
   return (
     <nav className='fixed w-full z-10 shadow-lg bg-product-walkthrough-bg'>
@@ -87,7 +95,9 @@ function NavBar({ setOpen }: NavBarProps) {
         <Button
           variant={'default'}
           className='btn-main hidden lg:flex'
-          onClick={handleButtonClick}
+          // onClick={handleButtonClick}
+          // onClick={() => router.push('/platform/dashboard')}
+          onClick={() => router.push('/platform/auth/login')}
         >
           Get Started
           <Image src={btnIcon} alt='Arrow Icon' />
@@ -123,7 +133,8 @@ function NavBar({ setOpen }: NavBarProps) {
             <Button
               variant={'default'}
               className='btn-main w-full'
-              onClick={handleButtonClick}
+              // onClick={handleButtonClick}
+              onClick={() => router.push('/platform/auth/login')}
             >
               Get Started
               <Image src={btnIcon} alt='Arrow Icon' />

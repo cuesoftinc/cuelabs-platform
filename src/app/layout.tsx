@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Fustat } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
+import { Providers } from '@/providers/Providers';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -114,7 +116,9 @@ export default function RootLayout({
           ></iframe>
         </noscript>
         {/* <!-- End Google Tag Manager (noscript) --> */}
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { airtableClient } from '@/lib/airtable';
 import type {
@@ -107,32 +108,32 @@ export const useCreateProject = () => {
 };
 
 // Hook to update a project
-export const useUpdateProject = () => {
-  const queryClient = useQueryClient();
+// export const useUpdateProject = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      projectId,
-      updates,
-    }: {
-      projectId: string;
-      updates: Partial<ProjectFields>;
-    }) => {
-      const response = await airtableClient.updateRecord(
-        'Projects',
-        projectId,
-        updates,
-      );
-      return response.record as Project;
-    },
-    onSuccess: (updatedProject) => {
-      // Update the specific project in cache
-      queryClient.setQueryData(['projects', updatedProject.id], updatedProject);
-      // Invalidate projects list to reflect changes
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: async ({
+//       projectId,
+//       updates,
+//     }: {
+//       projectId: string;
+//       updates: Partial<ProjectFields>;
+//     }) => {
+//       const response = await airtableClient.updateRecord(
+//         'Projects',
+//         projectId,
+//         updates,
+//       );
+//       return response.record as Project;
+//     },
+//     onSuccess: (updatedProject) => {
+//       // Update the specific project in cache
+//       queryClient.setQueryData(['projects', updatedProject.id], updatedProject);
+//       // Invalidate projects list to reflect changes
+//       queryClient.invalidateQueries({ queryKey: ['projects'] });
+//     },
+//   });
+// };
 
 // Hook to delete a project
 export const useDeleteProject = () => {
@@ -204,5 +205,70 @@ export const useCreateSubmission = () => {
       // Invalidate and refetch projects list
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
+  });
+};
+
+// Hook to update a bounty
+export const useUpdateBounty = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      bountyId,
+      updates,
+    }: {
+      bountyId: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      updates: any;
+    }) => {
+      const response = await airtableClient.updateRecord(
+        'Bounties',
+        bountyId,
+        updates,
+      );
+      // Return the response directly since it's already the bounty object
+      return response;
+    },
+    onSuccess: (updatedBounty, variables) => {
+      // Update the specific bounty in cache
+      queryClient.setQueryData(['bounties', variables.bountyId], updatedBounty);
+      // Invalidate bounties list to reflect changes
+      queryClient.invalidateQueries({ queryKey: ['bounties'] });
+    },
+  });
+};
+
+// Hook to fetch user's claimed bounties
+export const useUserClaimedBounties = (userId: string) => {
+  return useQuery({
+    queryKey: ['user-claimed-bounties', userId],
+    queryFn: async () => {
+      // Fetch all bounties where the user is a participant
+      const response = await airtableClient.getRecords('Bounties', {
+        filterByFormula: `SEARCH("${userId}", ARRAYJOIN({Participants}))`,
+      });
+
+      // Filter to only include bounties where the user is actually a participant
+      const userBounties = response.records.filter((bounty: any) => {
+        const participants = bounty.fields.Participants || [];
+        return participants.some((participant: any) => {
+          if (typeof participant === 'string') {
+            return participant === userId;
+          } else if (
+            participant &&
+            typeof participant === 'object' &&
+            participant.id
+          ) {
+            return participant.id === userId;
+          }
+          return false;
+        });
+      });
+
+      return userBounties;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 };

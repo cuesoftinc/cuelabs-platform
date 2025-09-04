@@ -33,7 +33,7 @@ export interface UserFields {
   'Wallet Balance'?: number;
   'Total Earnings'?: number;
   Attachments?: Attachment[];
-  Status?: 'Inactive' | 'Pending' | 'Active';
+  Status?: string | 'Inactive' | 'Pending' | 'Active';
   'Active Bounties'?: Bounty[] | string[];
   'Completed Bounties'?: Bounty[] | string[];
   Rank?: number;

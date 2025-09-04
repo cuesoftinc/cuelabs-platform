@@ -27,9 +27,10 @@ export const useUser = (userId: string) => {
 export const useUserByEmail = (email: string) => {
   return useQuery<UsersResponse>({
     queryKey: ['user', 'email', email],
-    queryFn: () => airtableClient.getRecords<UserFields>('Users', {
-      filterByFormula: `{Email} = "${email}"`,
-    }),
+    queryFn: () =>
+      airtableClient.getRecords<UserFields>('Users', {
+        filterByFormula: `{Email} = "${email}"`,
+      }),
     enabled: !!email,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -46,7 +47,7 @@ export const useCreateUser = () => {
     onSuccess: (newUser) => {
       // Set the individual user cache
       queryClient.setQueryData(['user', newUser.id], newUser);
-      
+
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -68,10 +69,10 @@ export const useUpdateUser = () => {
     onSuccess: (data, variables) => {
       // Update the specific user in cache
       queryClient.setQueryData(['user', variables.userId], {
-        ...data.record,
+        ...data,
         id: variables.userId,
       });
-      
+
       // Invalidate queries to refetch fresh data
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
@@ -79,40 +80,15 @@ export const useUpdateUser = () => {
   });
 };
 
-// Mutation hook for deleting a user
-export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (userId: string) => airtableClient.deleteRecord('Users', userId),
-    onSuccess: (data) => {
-      // Remove individual user cache
-      queryClient.removeQueries({ queryKey: ['user', data.id] });
-      
-      // Invalidate users list to refetch
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
-};
-
-// Query hook for fetching active users only
-export const useActiveUsers = () => {
-  return useQuery<UsersResponse>({
-    queryKey: ['users', 'active'],
-    queryFn: () => airtableClient.getRecords<UserFields>('Users', {
-      filterByFormula: `{Status} = "Active"`,
-    }),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
-
 // Query hook for fetching users with pagination
-export const useUsersWithPagination = (pageSize: number = 100, offset?: string) => {
+export const useUsersWithPagination = (
+  pageSize: number = 100,
+  offset?: string,
+) => {
   const params: Record<string, string> = {
     pageSize: pageSize.toString(),
   };
-  
+
   if (offset) {
     params.offset = offset;
   }

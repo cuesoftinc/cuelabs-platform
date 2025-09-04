@@ -1,9 +1,31 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import AppleProvider from 'next-auth/providers/apple';
 import { airtableClient } from '@/lib/airtable';
+
+// Extend the NextAuth types to include our custom fields
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
+  
+  interface User {
+    id?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    airtableUserId?: string;
+  }
+}
+
 
 const handler = NextAuth({
   providers: [
@@ -27,7 +49,7 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user }) {
       try {
         // Check if user exists in Airtable
         const existingUsers = await airtableClient.getRecords('Users', {
@@ -36,22 +58,22 @@ const handler = NextAuth({
 
         if (existingUsers.records.length === 0) {
           // Create new user in Airtable
-          await airtableClient.createRecord('Users', {
+          const newUser = await airtableClient.createRecord('Users', {
             Email: user.email,
             Name: user.name || '',
-            Avatar: user.image || '',
-            Provider: account?.provider || '',
-            'Provider ID': account?.providerAccountId || '',
-            'Created At': new Date().toISOString(),
             Status: 'Active',
+            'Wallet Balance': 0,
+            'Total Earnings': 0,
           });
+          
+          // Store the new user ID for later use
+          user.id = newUser.id;
         } else {
           // Update existing user's last login
           const existingUser = existingUsers.records[0];
-          await airtableClient.updateRecord('Users', existingUser.id, {
-            'Last Login': new Date().toISOString(),
-            Avatar: user.image || existingUser.fields.Avatar,
-          });
+          
+          // Store the existing user ID
+          user.id = existingUser.id;
         }
 
         return true;
@@ -60,33 +82,20 @@ const handler = NextAuth({
         return false;
       }
     },
-    async session({ session, token }) {
-      // Fetch user data from Airtable
-      try {
-        const users = await airtableClient.getRecords('Users', {
-          filterByFormula: `{Email} = "${session.user?.email}"`,
-        });
-
-        if (users.records.length > 0) {
-          const userData = users.records[0].fields;
-          session.user = {
-            ...session.user,
-            // id: users.records[0].id,
-            // role: userData.Role || 'user',
-            // status: userData.Status || 'Active',
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-
-      return session;
-    },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        // Store the Airtable user ID in the token
+        token.airtableUserId = user.id;
+        token.email = user.email;
       }
       return token;
+    },
+    async session({ session, token }) {
+      // Pass the Airtable user ID to the session
+      if (token.airtableUserId && session.user) {
+        session.user.id = token.airtableUserId;
+      }
+      return session;
     },
   },
   pages: {

@@ -52,7 +52,7 @@ export const useUpdateAirtableRecord = (tableName: string) => {
     onSuccess: (data, variables) => {
       // Update the specific record in cache
       queryClient.setQueryData(['airtable', tableName, variables.recordId], {
-        record: data.record,
+        record: data,
       });
       // Invalidate list queries
       queryClient.invalidateQueries({ queryKey: ['airtable', tableName] });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { airtableClient } from '@/lib/airtable';
 import type {
@@ -217,6 +218,7 @@ export const useUpdateBounty = () => {
       updates,
     }: {
       bountyId: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updates: any;
     }) => {
       const response = await airtableClient.updateRecord(
@@ -252,7 +254,11 @@ export const useUserClaimedBounties = (userId: string) => {
         return participants.some((participant: any) => {
           if (typeof participant === 'string') {
             return participant === userId;
-          } else if (participant && typeof participant === 'object' && participant.id) {
+          } else if (
+            participant &&
+            typeof participant === 'object' &&
+            participant.id
+          ) {
             return participant.id === userId;
           }
           return false;

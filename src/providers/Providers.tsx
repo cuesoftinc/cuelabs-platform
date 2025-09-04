@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SessionProvider } from 'next-auth/react';
 import { store, persistor } from '@/store';
 import { queryClient } from '@/lib/queryClient';
+import CustomSpinner from '@/components/custom/custom-spinner';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -16,7 +17,11 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+        <PersistGate loading={
+          <div className='flex items-center justify-center h-screen bg-darkmode-bg'>
+            <CustomSpinner />
+          </div>
+        } persistor={persistor}>
           <QueryClientProvider client={queryClient}>
             {children}
             <ReactQueryDevtools initialIsOpen={false} />

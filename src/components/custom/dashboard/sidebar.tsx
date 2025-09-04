@@ -20,7 +20,7 @@ import { ArrowRight, Menu, X } from 'lucide-react';
 function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(true); // collapsed by default on mobile
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   // Helper function to get user initials
   const getUserInitials = (name: string) => {
@@ -221,6 +221,7 @@ function Sidebar() {
             </div>
           </div>
           <Button
+            onClick={logout}
             className={`btn-main-p w-full ${collapsed ? 'hidden lg:flex' : 'flex'}`}
           >
             Sign Out <ArrowRight />

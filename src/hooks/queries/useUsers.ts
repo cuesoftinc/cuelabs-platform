@@ -27,9 +27,10 @@ export const useUser = (userId: string) => {
 export const useUserByEmail = (email: string) => {
   return useQuery<UsersResponse>({
     queryKey: ['user', 'email', email],
-    queryFn: () => airtableClient.getRecords<UserFields>('Users', {
-      filterByFormula: `{Email} = "${email}"`,
-    }),
+    queryFn: () =>
+      airtableClient.getRecords<UserFields>('Users', {
+        filterByFormula: `{Email} = "${email}"`,
+      }),
     enabled: !!email,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -46,7 +47,7 @@ export const useCreateUser = () => {
     onSuccess: (newUser) => {
       // Set the individual user cache
       queryClient.setQueryData(['user', newUser.id], newUser);
-      
+
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -68,10 +69,10 @@ export const useUpdateUser = () => {
     onSuccess: (data, variables) => {
       // Update the specific user in cache
       queryClient.setQueryData(['user', variables.userId], {
-        ...data.record,
+        ...data,
         id: variables.userId,
       });
-      
+
       // Invalidate queries to refetch fresh data
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
@@ -79,13 +80,15 @@ export const useUpdateUser = () => {
   });
 };
 
-
 // Query hook for fetching users with pagination
-export const useUsersWithPagination = (pageSize: number = 100, offset?: string) => {
+export const useUsersWithPagination = (
+  pageSize: number = 100,
+  offset?: string,
+) => {
   const params: Record<string, string> = {
     pageSize: pageSize.toString(),
   };
-  
+
   if (offset) {
     params.offset = offset;
   }

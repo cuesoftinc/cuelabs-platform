@@ -43,7 +43,11 @@ type BountyCardProps = {
   canClaimMoreBounties?: boolean;
 };
 
-function BountyCard({ bounty, category = 'development', canClaimMoreBounties = true }: BountyCardProps) {
+function BountyCard({
+  bounty,
+  category = 'development',
+  canClaimMoreBounties = true,
+}: BountyCardProps) {
   const [openBountyDetails, setOpenBountyDetails] = useState(false);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [submissionUrl, setSubmissionUrl] = useState('');
@@ -67,16 +71,21 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
   // Check if current user is among participants
   const checkIfUserIsParticipant = () => {
     if (!user || !bountyDetailsData?.fields?.Participants) return false;
-    
+
     const participants = bountyDetailsData.fields.Participants;
     const currentUserId = user.id;
-    
+
     // Check if current user ID is in the participants array
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return participants.some((participant: any) => {
       // Handle both string IDs and User objects
       if (typeof participant === 'string') {
         return participant === currentUserId;
-      } else if (participant && typeof participant === 'object' && participant.id) {
+      } else if (
+        participant &&
+        typeof participant === 'object' &&
+        participant.id
+      ) {
         return participant.id === currentUserId;
       }
       return false;
@@ -110,7 +119,9 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
     }
 
     if (participantCount >= 5) {
-      setClaimError('This bounty has reached the maximum number of participants (5).');
+      setClaimError(
+        'This bounty has reached the maximum number of participants (5).',
+      );
       setTimeout(() => setClaimError(null), 5000);
       return;
     }
@@ -120,15 +131,22 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
     setIsClaiming(true);
 
     try {
-      const participantIds = currentParticipants.map((participant: any) => {
-        // Handle both string IDs and User objects
-        if (typeof participant === 'string') {
-          return participant;
-        } else if (participant && typeof participant === 'object' && participant.id) {
-          return participant.id;
-        }
-        return null;
-      }).filter(Boolean);
+      const participantIds = currentParticipants
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((participant: any) => {
+          // Handle both string IDs and User objects
+          if (typeof participant === 'string') {
+            return participant;
+          } else if (
+            participant &&
+            typeof participant === 'object' &&
+            participant.id
+          ) {
+            return participant.id;
+          }
+          return null;
+        })
+        .filter(Boolean);
 
       // Check if user is already a participant
       if (participantIds.includes(user.id)) {
@@ -151,8 +169,11 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
       // Also update the user's Active Bounties field
       if (user && updatedBounty && updatedBounty.id) {
         const currentUserActiveBounties = user.fields['Active Bounties'] || [];
-        const updatedUserActiveBounties = [...currentUserActiveBounties, bounty.id];
-        
+        const updatedUserActiveBounties = [
+          ...currentUserActiveBounties,
+          bounty.id,
+        ];
+
         await airtableClient.updateRecord('Users', user.id, {
           'Active Bounties': updatedUserActiveBounties,
         });
@@ -162,22 +183,25 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
       if (updatedBounty && updatedBounty.id) {
         setIsClaimed(true);
       } else {
-        throw new Error('Failed to update bounty in Airtable - invalid response');
+        throw new Error(
+          'Failed to update bounty in Airtable - invalid response',
+        );
       }
     } catch (error) {
       console.error('Error claiming bounty:', error);
-      
+
       // Reset claiming state on error
       setIsClaiming(false);
-      
+
       // Show user-friendly error message
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to claim bounty. Please try again.';
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to claim bounty. Please try again.';
+
       // Set error state for UI display
       setClaimError(errorMessage);
-      
+
       // Clear error after 5 seconds
       setTimeout(() => setClaimError(null), 5000);
     } finally {
@@ -305,7 +329,7 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
   const displayCategory = fields?.Genre?.toLowerCase() || category;
   const participantCount = fields?.Participants?.length || 0;
   const bountyStatus = fields?.Status;
-  
+
   // Check if bounty can be claimed
   const canClaimBounty = bountyStatus !== 'Done' && participantCount < 5;
 
@@ -412,40 +436,45 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                 <div>
                   <div className='flex items-center flex-wrap gap-4 w-full'>
                     <div className='flex items-center gap-2 '>
-                    <h2 className='text-lg md:text-xl leading-[120%] -tracking-[2%]'>
-                      {fields?.Name || 'Homepage Bug'}
-                    </h2>
-                    <span
-                      className={`active-status gap-1 ${
-                        fields?.Status === 'In progress'
-                          ? 'inactive-status'
-                          : fields?.Status === 'Done'
-                            ? 'active-status'
-                            : 'new-status'
-                      }`}
-                    >
-                      <div
-                        className='w-[3px] h-[3px] rounded-full inline-block'
-                        style={{
-                          backgroundColor: getStatusColor(fields?.Status),
-                        }}
-                      />
-                      {fields?.Status}
-                    </span>
+                      <h2 className='text-lg md:text-xl leading-[120%] -tracking-[2%]'>
+                        {fields?.Name || 'Homepage Bug'}
+                      </h2>
+                      <span
+                        className={`active-status gap-1 ${
+                          fields?.Status === 'In progress'
+                            ? 'inactive-status'
+                            : fields?.Status === 'Done'
+                              ? 'active-status'
+                              : 'new-status'
+                        }`}
+                      >
+                        <div
+                          className='w-[3px] h-[3px] rounded-full inline-block'
+                          style={{
+                            backgroundColor: getStatusColor(fields?.Status),
+                          }}
+                        />
+                        {fields?.Status}
+                      </span>
                     </div>
 
                     {/* Claim Bounty Button */}
                     <Button
                       onClick={handleClaimBounty}
-                      disabled={isClaimed || isClaiming || !canClaimMoreBounties || !canClaimBounty}
+                      disabled={
+                        isClaimed ||
+                        isClaiming ||
+                        !canClaimMoreBounties ||
+                        !canClaimBounty
+                      }
                       className={`h-10 px-4 font-semibold text-sm transition-all duration-200 whitespace-nowrap ${
                         isClaimed
                           ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white cursor-not-allowed shadow-lg'
                           : isClaiming
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white cursor-not-allowed shadow-lg'
-                          : !canClaimMoreBounties || !canClaimBounty
-                          ? 'bg-gray-500 hover:bg-gray-600 text-white cursor-not-allowed shadow-lg'
-                          : 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white cursor-not-allowed shadow-lg'
+                            : !canClaimMoreBounties || !canClaimBounty
+                              ? 'bg-gray-500 hover:bg-gray-600 text-white cursor-not-allowed shadow-lg'
+                              : 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                       }`}
                     >
                       {isClaiming && (
@@ -453,8 +482,16 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                       )}
                       {isClaimed ? (
                         <span className='flex items-center gap-2'>
-                          <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
-                            <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
+                          <svg
+                            className='w-4 h-4'
+                            fill='currentColor'
+                            viewBox='0 0 20 20'
+                          >
+                            <path
+                              fillRule='evenodd'
+                              d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
+                              clipRule='evenodd'
+                            />
                           </svg>
                           Claimed
                         </span>
@@ -463,7 +500,11 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                       ) : !canClaimMoreBounties ? (
                         'Limit Reached'
                       ) : !canClaimBounty ? (
-                        bountyStatus === 'Done' ? 'Completed' : 'Full'
+                        bountyStatus === 'Done' ? (
+                          'Completed'
+                        ) : (
+                          'Full'
+                        )
                       ) : (
                         'Claim Bounty'
                       )}
@@ -480,7 +521,8 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                     {!canClaimMoreBounties && !isClaimed && (
                       <div className='mt-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg'>
                         <p className='text-yellow-400 text-xs'>
-                          You've reached the maximum limit of 3 active bounties. Complete some bounties to claim new ones.
+                          You&apos;ve reached the maximum limit of 3 active
+                          bounties. Complete some bounties to claim new ones.
                         </p>
                       </div>
                     )}
@@ -489,10 +531,9 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                     {!canClaimBounty && !isClaimed && canClaimMoreBounties && (
                       <div className='mt-2 p-2 bg-orange-500/10 border border-orange-500/20 rounded-lg'>
                         <p className='text-orange-400 text-xs'>
-                          {bountyStatus === 'Done' 
+                          {bountyStatus === 'Done'
                             ? 'This bounty has been completed and is no longer available.'
-                            : `This bounty has reached the maximum number of participants (${participantCount}/5).`
-                          }
+                            : `This bounty has reached the maximum number of participants (${participantCount}/5).`}
                         </p>
                       </div>
                     )}
@@ -642,108 +683,110 @@ function BountyCard({ bounty, category = 'development', canClaimMoreBounties = t
                         Submit Your Work
                       </h3>
 
-                    {submissionError && (
-                      <div className='border border-red-500/20 bg-red-500/10 p-3 rounded-lg'>
-                        <span className='text-red-400 text-sm'>
-                          {submissionError}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className='input-style'>
-                      <Label htmlFor='submission-url' className=''>
-                        Submission URL *
-                      </Label>
-                      <Input
-                        type='url'
-                        id='submission-url'
-                        placeholder='https://github.com/your-repo/your-submission'
-                        value={submissionUrl}
-                        onChange={(e) => {
-                          setSubmissionUrl(e.target.value);
-                          if (urlError) setUrlError('');
-                          if (submissionError) setSubmissionError('');
-                        }}
-                        className={urlError ? 'border-red-500' : ''}
-                        disabled={isSubmitting}
-                      />
-                      {urlError && (
-                        <span className='text-red-500 text-xs mt-1'>
-                          {urlError}
-                        </span>
-                      )}
-                      <div className='text-xs text-[#666] mt-1 space-y-1'>
-                        <p>
-                          Provide a link to your completed work. Accepted
-                          platforms:
-                        </p>
-                        <ul className='list-disc list-inside text-[10px] ml-2 space-y-0.5'>
-                          <li>GitHub/GitLab repositories</li>
-                          <li>Live demos (Vercel, Netlify, etc.)</li>
-                          <li>Code playgrounds (CodePen, CodeSandbox)</li>
-                          <li>Design files (Figma, Dribbble)</li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className='flex items-center justify-between mb-2'>
-                        <Label className='text-sm font-medium text-auth-text'>
-                          Comments (Optional)
-                        </Label>
-                        <span className='text-xs text-[#666]'>
-                          {comments.length}/500
-                        </span>
-                      </div>
-                      <CustomTextareaToolbar
-                        value={comments}
-                        onChange={(value) => {
-                          if (value.length <= 500) {
-                            setComments(value);
-                          }
-                        }}
-                        disabled={isSubmitting}
-                      />
-                      <div className='text-xs text-[#666] mt-1'>
-                        <p>Add any additional notes about your submission:</p>
-                        <ul className='list-disc list-inside text-[10px] ml-2 mt-1 space-y-0.5'>
-                          <li>Implementation approach</li>
-                          <li>Technologies used</li>
-                          <li>Challenges faced</li>
-                          <li>Special features or considerations</li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Submission Preview */}
-                    {(submissionUrl.trim() || comments.trim()) &&
-                      !submissionError && (
-                        <div className='space-y-2 p-3 bg-[#0A0A0A] rounded-lg border border-[#1F1F1F]'>
-                          <h4 className='text-white font-medium text-xs'>
-                            Submission Preview
-                          </h4>
-                          {submissionUrl.trim() && (
-                            <div>
-                              <span className='text-[#666] text-xs'>URL:</span>
-                              <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white break-all'>
-                                {submissionUrl}
-                              </div>
-                            </div>
-                          )}
-                          {comments.trim() && (
-                            <div>
-                              <span className='text-[#666] text-xs'>
-                                Comments:
-                              </span>
-                              <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white whitespace-pre-wrap'>
-                                {comments.length > 100
-                                  ? comments.substring(0, 100) + '...'
-                                  : comments}
-                              </div>
-                            </div>
-                          )}
+                      {submissionError && (
+                        <div className='border border-red-500/20 bg-red-500/10 p-3 rounded-lg'>
+                          <span className='text-red-400 text-sm'>
+                            {submissionError}
+                          </span>
                         </div>
                       )}
+
+                      <div className='input-style'>
+                        <Label htmlFor='submission-url' className=''>
+                          Submission URL *
+                        </Label>
+                        <Input
+                          type='url'
+                          id='submission-url'
+                          placeholder='https://github.com/your-repo/your-submission'
+                          value={submissionUrl}
+                          onChange={(e) => {
+                            setSubmissionUrl(e.target.value);
+                            if (urlError) setUrlError('');
+                            if (submissionError) setSubmissionError('');
+                          }}
+                          className={urlError ? 'border-red-500' : ''}
+                          disabled={isSubmitting}
+                        />
+                        {urlError && (
+                          <span className='text-red-500 text-xs mt-1'>
+                            {urlError}
+                          </span>
+                        )}
+                        <div className='text-xs text-[#666] mt-1 space-y-1'>
+                          <p>
+                            Provide a link to your completed work. Accepted
+                            platforms:
+                          </p>
+                          <ul className='list-disc list-inside text-[10px] ml-2 space-y-0.5'>
+                            <li>GitHub/GitLab repositories</li>
+                            <li>Live demos (Vercel, Netlify, etc.)</li>
+                            <li>Code playgrounds (CodePen, CodeSandbox)</li>
+                            <li>Design files (Figma, Dribbble)</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className='flex items-center justify-between mb-2'>
+                          <Label className='text-sm font-medium text-auth-text'>
+                            Comments (Optional)
+                          </Label>
+                          <span className='text-xs text-[#666]'>
+                            {comments.length}/500
+                          </span>
+                        </div>
+                        <CustomTextareaToolbar
+                          value={comments}
+                          onChange={(value) => {
+                            if (value.length <= 500) {
+                              setComments(value);
+                            }
+                          }}
+                          disabled={isSubmitting}
+                        />
+                        <div className='text-xs text-[#666] mt-1'>
+                          <p>Add any additional notes about your submission:</p>
+                          <ul className='list-disc list-inside text-[10px] ml-2 mt-1 space-y-0.5'>
+                            <li>Implementation approach</li>
+                            <li>Technologies used</li>
+                            <li>Challenges faced</li>
+                            <li>Special features or considerations</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Submission Preview */}
+                      {(submissionUrl.trim() || comments.trim()) &&
+                        !submissionError && (
+                          <div className='space-y-2 p-3 bg-[#0A0A0A] rounded-lg border border-[#1F1F1F]'>
+                            <h4 className='text-white font-medium text-xs'>
+                              Submission Preview
+                            </h4>
+                            {submissionUrl.trim() && (
+                              <div>
+                                <span className='text-[#666] text-xs'>
+                                  URL:
+                                </span>
+                                <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white break-all'>
+                                  {submissionUrl}
+                                </div>
+                              </div>
+                            )}
+                            {comments.trim() && (
+                              <div>
+                                <span className='text-[#666] text-xs'>
+                                  Comments:
+                                </span>
+                                <div className='mt-1 p-2 bg-[#111] rounded text-xs text-white whitespace-pre-wrap'>
+                                  {comments.length > 100
+                                    ? comments.substring(0, 100) + '...'
+                                    : comments}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                     </div>
                   )}
                 </div>

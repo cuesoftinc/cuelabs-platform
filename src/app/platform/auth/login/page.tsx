@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { signIn, useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -15,24 +15,15 @@ function LoginPage() {
   const { setCurrentUser } = useAuth();
   
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    // Only process session if user has a valid Airtable ID
-    if (session?.user?.id) {
-      handleUserSession(session);
-    }
-  }, [session, status]);
-
-  const handleUserSession = async (session: any) => {
+  const handleUserSession = useCallback(async (session: { user?: { id?: string } }) => {
     if (isProcessing) return;
     setIsProcessing(true);
 
     try {
       // Validate session has required data
       if (!session?.user?.id) {
-        console.log('🔄 Invalid session: missing user ID, clearing session');
         await signOut({ redirect: false });
         return;
       }
@@ -41,7 +32,6 @@ function LoginPage() {
       const response = await fetch(`/api/users/${session.user.id}`);
       
       if (!response.ok) {
-        console.log(`🔄 User not found in Airtable (${response.status}), clearing session`);
         await signOut({ redirect: false });
         return;
       }
@@ -56,16 +46,25 @@ function LoginPage() {
       
     } catch (error) {
       console.error('Error processing user session:', error);
-      console.log('🔄 Error occurred, clearing session and allowing fresh login');
       
       // Clear the session on any error and allow fresh login
       await signOut({ redirect: false });
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [isProcessing, setCurrentUser, router]);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    // Only process session if user has a valid Airtable ID
+    if (session?.user?.id) {
+      handleUserSession(session);
+    }
+  }, [session, status, handleUserSession]);
 
   const handleGitHubSignIn = () => {
+    setIsSigningIn(true);
     // Remove callbackUrl to prevent redirect loops
     signIn('github');
   };
@@ -80,12 +79,22 @@ function LoginPage() {
     );
   }
 
-  // Show loading while processing
+  // Show loading while signing in with GitHub
+  if (isSigningIn) {
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CustomSpinner />
+        <p className='text-auth-text mt-4'>Redirecting to GitHub...</p>
+      </div>
+    );
+  }
+
+  // Show loading while processing session
   if (isProcessing) {
     return (
       <div className='flex flex-col items-center justify-center h-full'>
         <CustomSpinner />
-        <p className='text-auth-text mt-4'>Processing your login...</p>
+        <p className='text-auth-text mt-4'>Setting up your account...</p>
       </div>
     );
   }
@@ -102,7 +111,7 @@ function LoginPage() {
       <div className='my-8 w-full flex flex-col gap-4'>
         <div
           onClick={handleGitHubSignIn}
-          className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'
+          className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <Image src={githubIcon} alt='Github Icon' width={24} height={24} />
           <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>

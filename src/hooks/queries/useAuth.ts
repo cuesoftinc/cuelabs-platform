@@ -1,15 +1,15 @@
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import {
-  loginStart,
   loginSuccess,
-  loginFailure,
   logout,
 } from '@/store/slices/authSlice';
 import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { User } from '@/types/users';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { user, isAuthenticated, token, isLoading } = useAppSelector(
     (state) => state.auth,
   );
@@ -20,6 +20,9 @@ export const useAuth = () => {
     
     // Clear NextAuth session
     await signOut({ redirect: false });
+    
+    // Redirect to login page
+    router.push('/platform/auth/login');
   };
 
   const setCurrentUser = (user: User) => {

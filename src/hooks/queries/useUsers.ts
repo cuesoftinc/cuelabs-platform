@@ -79,33 +79,6 @@ export const useUpdateUser = () => {
   });
 };
 
-// Mutation hook for deleting a user
-export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (userId: string) => airtableClient.deleteRecord('Users', userId),
-    onSuccess: (data) => {
-      // Remove individual user cache
-      queryClient.removeQueries({ queryKey: ['user', data.id] });
-      
-      // Invalidate users list to refetch
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
-};
-
-// Query hook for fetching active users only
-export const useActiveUsers = () => {
-  return useQuery<UsersResponse>({
-    queryKey: ['users', 'active'],
-    queryFn: () => airtableClient.getRecords<UserFields>('Users', {
-      filterByFormula: `{Status} = "Active"`,
-    }),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
 
 // Query hook for fetching users with pagination
 export const useUsersWithPagination = (pageSize: number = 100, offset?: string) => {

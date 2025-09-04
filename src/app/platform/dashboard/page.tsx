@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 
-import { PiTimerFill, PiPuzzlePieceFill } from 'react-icons/pi';
+import { PiTimerFill } from 'react-icons/pi';
 import { IoIosStar } from 'react-icons/io';
 
 import { Button } from '@/components/ui/button';
@@ -30,11 +30,7 @@ import { PiCalendarBlankFill } from 'react-icons/pi';
 import { useUser, useUsers } from '@/hooks/queries/useUsers';
 import { useAuth } from '@/hooks/queries/useAuth';
 import { useFetchProjects } from '@/hooks/queries/useProjects';
-import { useQuery } from '@tanstack/react-query';
 import CustomSpinner from '@/components/custom/custom-spinner';
-import BountyCard from '@/components/custom/dashboard/projects/bounty-card';
-import { Bounty } from '@/types/bounties';
-import { airtableClient } from '@/lib/airtable';
 
 // Helper function to get ordinal suffix
 const getOrdinalSuffix = (num: number): string => {
@@ -72,51 +68,6 @@ function DashboardPage() {
 
   // Get current user's total earnings
   const totalEarnings = userData?.fields['Total Earnings'] || 0;
-
-  // Get user's active bounties from their profile
-  const userActiveBounties: (string | Bounty)[] = userData?.fields['Active Bounties'] || [];
-  
-  // Check if user can claim more bounties (limit of 3)
-  const canClaimMoreBounties = (userActiveBounties?.length || 0) < 3;
-  const claimedBountiesCount = userActiveBounties?.length || 0;
-
-  // Fetch the actual bounty details for the user's active bounties
-  const { data: claimedBounties, isLoading: isLoadingClaimedBounties } = useQuery({
-    queryKey: ['user-active-bounties', userId, userActiveBounties],
-    queryFn: async () => {
-      if (!userActiveBounties || userActiveBounties.length === 0) {
-        return [];
-      }
-
-      // Extract bounty IDs (handle both string IDs and Bounty objects)
-      const bountyIds = userActiveBounties.map((bounty) => {
-        if (typeof bounty === 'string') {
-          return bounty;
-        } else if (bounty && typeof bounty === 'object' && 'id' in bounty) {
-          return bounty.id;
-        }
-        return null;
-      }).filter(Boolean) as string[];
-
-      if (bountyIds.length === 0) {
-        return [];
-      }
-
-      // Fetch bounty details using the IDs
-      const bountyRecordsQuery = bountyIds
-        .map((id) => `RECORD_ID()="${id}"`)
-        .join(',');
-      
-      const response = await airtableClient.getRecords('Bounties', {
-        filterByFormula: `OR(${bountyRecordsQuery})`,
-      });
-      
-      return response.records || [];
-    },
-    enabled: !!userData && !!userActiveBounties && userActiveBounties.length > 0,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
 
   // Find current user's rank
   const getUserRank = () => {
@@ -293,60 +244,6 @@ function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      {/* Claimed Bounties Section */}
-      <div className='my-12'>
-        <div className='flex items-center justify-between mb-4'>
-          <h2 className='text-2xl leading-[32px] font-semibold'>
-            My Claimed Bounties
-          </h2>
-          <div className='flex items-center gap-2'>
-            <span className='text-sm text-auth-text'>
-              {claimedBountiesCount}/3 claimed
-            </span>
-            {!canClaimMoreBounties && (
-              <div className='px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-lg'>
-                <span className='text-yellow-400 text-xs font-medium'>
-                  Limit reached
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {isLoadingClaimedBounties ? (
-          <div className='flex items-center justify-center py-8'>
-            <CustomSpinner />
-            <span className='ml-2 text-white'>Loading your bounties...</span>
-          </div>
-        ) : claimedBounties && claimedBounties.length > 0 ? (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {claimedBounties.map((bounty) => (
-              <div key={bounty.id} className='h-full'>
-                <BountyCard bounty={bounty as Bounty} canClaimMoreBounties={canClaimMoreBounties} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className='text-center p-12 bg-[#0F0F0F] border border-[#1F1F1F] rounded-lg'>
-            <div className='text-auth-text mb-4'>
-              <PiPuzzlePieceFill className='w-12 h-12 mx-auto mb-4 text-[#545454]' />
-              <h3 className='text-lg font-semibold text-white mb-2'>
-                No Bounties Claimed Yet
-              </h3>
-              <p className='text-sm text-auth-text'>
-                Start claiming bounties to earn rewards and build your portfolio.
-              </p>
-            </div>
-            <Button 
-              className='btn-main-p'
-              onClick={() => window.location.href = '/platform/dashboard/projects'}
-            >
-              Browse Projects
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Recommended projects */}

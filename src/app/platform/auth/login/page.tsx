@@ -1,51 +1,94 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-
-import { signIn, getSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { signIn, useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/queries/useAuth';
+import CustomSpinner from '@/components/custom/custom-spinner';
 
-// import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label';
-// import { Eye, EyeOff } from 'lucide-react';
-// import { Button } from '@/components/ui/button';
-// import { useRouter } from 'next/navigation';
-
-// import googleIcon from '@/svgs/google.svg';
 import githubIcon from '@/svgs/github.svg';
-// import appleIcon from '@/svgs/apple.svg';
 
 function LoginPage() {
-  // const [showPassword, setShowPassword] = useState(false);
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-  // const router = useRouter();
-
-  // const isFormValid = email.trim() !== '' && password.trim() !== '';
-
-  // const togglePasswordVisibility = () => {
-  //   setShowPassword(!showPassword);
-  // };
-
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const { setCurrentUser } = useAuth();
+  
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    // Check if user is already signed in
-    getSession().then((session) => {
-      if (session) {
-        router.push('/platform/dashboard');
-      }
-    });
-  }, [router]);
+    if (status === 'loading') return;
+    
+    // Only process session if user has a valid Airtable ID
+    if (session?.user?.id) {
+      handleUserSession(session);
+    }
+  }, [session, status]);
 
-  const handleSignIn = (provider: string) => {
-    signIn(provider, {
-      callbackUrl: '/platform/dashboard',
-      redirect: true,
-    });
+  const handleUserSession = async (session: any) => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      // Validate session has required data
+      if (!session?.user?.id) {
+        console.log('🔄 Invalid session: missing user ID, clearing session');
+        await signOut({ redirect: false });
+        return;
+      }
+
+      // Fetch user from Airtable using the ID from session
+      const response = await fetch(`/api/users/${session.user.id}`);
+      
+      if (!response.ok) {
+        console.log(`🔄 User not found in Airtable (${response.status}), clearing session`);
+        await signOut({ redirect: false });
+        return;
+      }
+
+      const userData = await response.json();
+      
+      // Set user in Redux
+      setCurrentUser(userData);
+      
+      // Redirect to dashboard
+      router.push('/platform/dashboard');
+      
+    } catch (error) {
+      console.error('Error processing user session:', error);
+      console.log('🔄 Error occurred, clearing session and allowing fresh login');
+      
+      // Clear the session on any error and allow fresh login
+      await signOut({ redirect: false });
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  const handleGitHubSignIn = () => {
+    // Remove callbackUrl to prevent redirect loops
+    signIn('github');
+  };
+
+  // Show loading while NextAuth is initializing
+  if (status === 'loading') {
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CustomSpinner />
+        <p className='text-auth-text mt-4'>Initializing...</p>
+      </div>
+    );
+  }
+
+  // Show loading while processing
+  if (isProcessing) {
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CustomSpinner />
+        <p className='text-auth-text mt-4'>Processing your login...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -57,28 +100,8 @@ function LoginPage() {
       </p>
 
       <div className='my-8 w-full flex flex-col gap-4'>
-        {/* <div
-          onClick={() => handleSignIn('google')}
-          className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'
-        >
-          <Image src={googleIcon} alt='Google Icon' width={24} height={24} />
-          <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
-            Sign In with Google
-          </span>
-        </div>
-
         <div
-          onClick={() => handleSignIn('apple')}
-          className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'
-        >
-          <Image src={appleIcon} alt='Apple Icon' width={24} height={24} />
-          <span className='text-[#E9E3DD] text-[15px] leading-[26px] font-semibold'>
-            Sign In with Apple
-          </span>
-        </div> */}
-
-        <div
-          onClick={() => handleSignIn('github')}
+          onClick={handleGitHubSignIn}
           className='bg-[#0F0F0F] flex justify-center items-center gap-3 h-[48px] rounded-[1000px] cursor-pointer hover:opacity-70'
         >
           <Image src={githubIcon} alt='Github Icon' width={24} height={24} />
@@ -87,66 +110,6 @@ function LoginPage() {
           </span>
         </div>
       </div>
-
-      {/* <div className='mt-8 w-full flex flex-col gap-6'>
-        <div className='input-style'>
-          <Label htmlFor='email' className=''>
-            Email
-          </Label>
-          <Input
-            type='email'
-            id='email'
-            placeholder='Enter email address'
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className='input-style'>
-          <Label htmlFor='password' className=''>
-            Password
-          </Label>
-          <div className='relative'>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              id='password'
-              placeholder='Enter password'
-              className='pr-12'
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button
-              type='button'
-              onClick={togglePasswordVisibility}
-              className='absolute right-3 top-1/2 -translate-y-1/2 text-auth-text hover:text-gray-700 focus:outline-none'
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <EyeOff className='h-5 w-5' />
-              ) : (
-                <Eye className='h-5 w-5' />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className='w-full text-center'>
-        <Button
-          className='btn-main-p my-8'
-          disabled={!isFormValid}
-          onClick={() => router.push('/platform/dashboard')}
-        >
-          Log in
-        </Button>
-        <p className='text-16c '>
-          Don&apos;t have an account?{' '}
-          <span
-            className='gradient-bg-text cursor-pointer'
-            onClick={() => router.push('/platform/auth/signup')}
-          >
-            Create Account
-          </span>
-        </p>
-      </div> */}
     </>
   );
 }

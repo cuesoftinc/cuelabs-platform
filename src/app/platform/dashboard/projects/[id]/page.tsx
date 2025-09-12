@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
@@ -12,49 +12,77 @@ import { CiSearch } from 'react-icons/ci';
 import { Input } from '@/components/ui/input';
 import BountyCard from '@/components/custom/dashboard/projects/bounty-card';
 import { useParams, useRouter } from 'next/navigation';
-import { useFetchProject } from '@/hooks/queries/useProjects';
+import {
+  useFetchProject,
+  useUserCompletedBounties,
+  useAllCompletedBounties,
+  useUserInProgressBounties,
+  useAvailableBounties,
+} from '@/hooks/queries/useProjects';
 import { formatDateToDayMonthYear } from '@/lib/utils';
 import CustomSpinner from '@/components/custom/custom-spinner';
-import { Bounty } from '@/types/bounties';
+// import { Bounty } from '@/types/bounties';
+import { useAuth } from '@/hooks/queries/useAuth';
 
 function ProjectDetailsPage() {
   const { id: projectId } = useParams();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<
+    'new' | 'in-progress' | 'completed'
+  >('new');
+  const [completedFilter, setCompletedFilter] = useState<
+    'my-completed' | 'all-completed'
+  >('my-completed');
 
+  const { user } = useAuth();
   const { data, isLoading, error } = useFetchProject(
     projectId?.toString() || '',
   );
   const fields = data?.fields;
-  // console.log(data);
-  
-  // Memoize bounties to prevent unnecessary re-renders
-  const bounties = useMemo(() => {
-    return (fields?.Bounties as Bounty[]) || [];
-  }, [fields?.Bounties]);
 
-  // Group bounties by status and filter by search term
-  const groupedBounties = useMemo(() => {
-    const filtered = bounties.filter((bounty) => {
-      if (!searchTerm) return true;
-      return (
+  // Use new hooks for user-centric bounty data
+  const { data: userCompletedBounties } = useUserCompletedBounties(
+    user?.id || '',
+  );
+  const { data: allCompletedBounties } = useAllCompletedBounties();
+  const { data: userInProgressBounties } = useUserInProgressBounties(
+    user?.id || '',
+  );
+  const { data: availableBounties } = useAvailableBounties(user?.id || '');
+
+  // Filter bounties by search term
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const filterBountiesBySearch = (bounties: any[]) => {
+    if (!searchTerm) return bounties;
+    return bounties.filter(
+      (bounty) =>
         bounty.fields.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         bounty.fields.Description?.toLowerCase().includes(
           searchTerm.toLowerCase(),
-        )
-      );
-    });
+        ),
+    );
+  };
 
-    const groups = {
-      New: filtered.filter((bounty) => bounty.fields.Status === 'New'),
-      'In progress': filtered.filter(
-        (bounty) => bounty.fields.Status === 'In progress',
-      ),
-      Done: filtered.filter((bounty) => bounty.fields.Status === 'Done'),
-    };
+  // Get bounties for the active tab
+  const getBountiesForActiveTab = () => {
+    switch (activeTab) {
+      case 'completed':
+        const completedBounties =
+          completedFilter === 'my-completed'
+            ? userCompletedBounties
+            : allCompletedBounties;
+        return filterBountiesBySearch(completedBounties || []);
+      case 'in-progress':
+        return filterBountiesBySearch(userInProgressBounties || []);
+      case 'new':
+        return filterBountiesBySearch(availableBounties || []);
+      default:
+        return [];
+    }
+  };
 
-    return groups;
-  }, [bounties, searchTerm]);
+  const currentBounties = getBountiesForActiveTab();
 
   if (isLoading) {
     return <CustomSpinner />;
@@ -156,7 +184,7 @@ function ProjectDetailsPage() {
         <div className='flex flex-col gap-6 md:flex-row justify-between md:items-center'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center justify-between md:w-[60%] xl:w-[50%]'>
             <h4 className='font-medium text-16c leading-[18px]'>
-              Bounties ({bounties.length})
+              Bounties ({currentBounties.length})
             </h4>
 
             <div className='relative w-full md:w-[75%] max-w-[375px] text-auth-text'>
@@ -170,93 +198,100 @@ function ProjectDetailsPage() {
               />
             </div>
           </div>
-
-          {/* <div className='flex gap-4 items-center justify-between w-fit md:w-[27%] xl:w-[20%]'>
-            <CustomSelectFilter>
-              <span>Status</span>
-            </CustomSelectFilter>
-
-            <CustomSelectFilter>
-              <div className='flex items-center gap-0.5'>
-                <PiCalendarBlankFill className='w-[10px] h-[10px]' />
-                <span>Date</span>
-              </div>
-            </CustomSelectFilter>
-          </div> */}
         </div>
 
-        <div className='mt-10 w-full flex gap-5 justify-between overflow-auto max-h-[80vh]'>
-          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
-            <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
-              <span>New</span>
-              <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>
-                {groupedBounties.New.length}
-              </div>
-            </div>
+        {/* Tab Navigation */}
+        <div className='mt-8 flex gap-4 border-b border-auth-border'>
+          <button
+            onClick={() => setActiveTab('new')}
+            className={`pb-3 px-1 text-sm font-medium transition-colors ${
+              activeTab === 'new'
+                ? 'text-white border-b-2 border-white'
+                : 'text-auth-text hover:text-white'
+            }`}
+          >
+            New ({availableBounties?.length || 0})
+          </button>
+          <button
+            onClick={() => setActiveTab('in-progress')}
+            className={`pb-3 px-1 text-sm font-medium transition-colors ${
+              activeTab === 'in-progress'
+                ? 'text-white border-b-2 border-white'
+                : 'text-auth-text hover:text-white'
+            }`}
+          >
+            In Progress ({userInProgressBounties?.length || 0})
+          </button>
+          <button
+            onClick={() => setActiveTab('completed')}
+            className={`pb-3 px-1 text-sm font-medium transition-colors ${
+              activeTab === 'completed'
+                ? 'text-white border-b-2 border-white'
+                : 'text-auth-text hover:text-white'
+            }`}
+          >
+            Completed ({userCompletedBounties?.length || 0})
+          </button>
+        </div>
 
-            <div className='flex flex-col gap-5 mt-5'>
-              {groupedBounties.New.length > 0 ? (
-                groupedBounties.New.map((bounty) => (
-                  <BountyCard key={bounty.id} bounty={bounty} />
-                ))
-              ) : (
-                <div className='text-auth-text text-sm text-center py-8'>
-                  No new bounties
-                </div>
-              )}
-              {/* <BountyCard />
-              <BountyCard category='design' /> */}
+        {/* Completed Tab Filter */}
+        {activeTab === 'completed' && (
+          <div className='mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+            <div className='flex items-center gap-2'>
+              <button
+                onClick={() => setCompletedFilter('my-completed')}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
+                  completedFilter === 'my-completed'
+                    ? 'btn-main-p'
+                    : 'btn-secondary-p'
+                }`}
+              >
+                My Completed
+              </button>
+              <button
+                onClick={() => setCompletedFilter('all-completed')}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
+                  completedFilter === 'all-completed'
+                    ? 'btn-main-p'
+                    : 'btn-secondary-p'
+                }`}
+              >
+                All Completed
+              </button>
             </div>
+            <span className='text-auth-text text-sm'>
+              {completedFilter === 'my-completed'
+                ? `Showing ${userCompletedBounties?.length || 0} of your completed bounties`
+                : `Showing ${allCompletedBounties?.length || 0} completed bounties in project`}
+            </span>
           </div>
+        )}
 
-          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
-            <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
-              <span>In Progress</span>
-              <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>
-                {groupedBounties['In progress'].length}
+        {/* Bounties Grid */}
+        <div className='mt-8'>
+          {currentBounties.length > 0 ? (
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+              {currentBounties.map((bounty) => (
+                <BountyCard key={bounty.id} bounty={bounty} />
+              ))}
+            </div>
+          ) : (
+            <div className='text-center py-12'>
+              <div className='text-auth-text text-lg mb-2'>
+                {activeTab === 'new' && 'No available bounties to claim'}
+                {activeTab === 'in-progress' && 'No bounties in progress'}
+                {activeTab === 'completed' && 'No completed bounties'}
               </div>
+              <p className='text-auth-text text-sm'>
+                {activeTab === 'new' &&
+                  'Check back later for new bounties to work on'}
+                {activeTab === 'in-progress' &&
+                  'Start claiming bounties to see them here'}
+                {activeTab === 'completed' &&
+                  'Complete some bounties to see them here'}
+              </p>
             </div>
-
-            <div className='flex flex-col gap-5 mt-5'>
-              {groupedBounties['In progress'].length > 0 ? (
-                groupedBounties['In progress'].map((bounty) => (
-                  <BountyCard key={bounty.id} bounty={bounty} />
-                ))
-              ) : (
-                <div className='text-auth-text text-sm text-center py-8'>
-                  No bounties in progress
-                </div>
-              )}
-              {/* <BountyCard />
-              <BountyCard category='design' />
-              <BountyCard /> */}
-            </div>
-          </div>
-
-          <div className='min-w-[200px] md:w-[31.5%] max-w-[329px]'>
-            <div className='card-container h-[50px] rounded-[8px] flex items-center justify-center gap-1 text-sm font-medium text-dashboard-nav'>
-              <span>Completed</span>
-              <div className='border-[0.6px] border-[#575DFF80] rounded-[2px] px-1 py-0.5 text-[10px] text-[#D1DBF9] flex items-center bg-[#575DFF33]'>
-                {groupedBounties.Done.length}
-              </div>
-            </div>
-
-            <div className='flex flex-col gap-5 mt-5'>
-              {groupedBounties.Done.length > 0 ? (
-                groupedBounties.Done.map((bounty) => (
-                  <BountyCard key={bounty.id} bounty={bounty} />
-                ))
-              ) : (
-                <div className='text-auth-text text-sm text-center py-8'>
-                  No completed bounties
-                </div>
-              )}
-              {/* <BountyCard />
-              <BountyCard />
-              <BountyCard category='design' />
-              <BountyCard /> */}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

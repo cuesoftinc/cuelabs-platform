@@ -36,6 +36,8 @@ import {
 import { airtableClient } from '@/lib/airtable';
 import { User } from '@/types/users';
 import { useAuth } from '@/hooks/queries/useAuth';
+import { updateUser } from '@/store/slices/authSlice';
+import { useAppDispatch } from '@/store/hooks';
 
 type BountyCardProps = {
   bounty?: Bounty;
@@ -57,10 +59,12 @@ function BountyCard({
   const [submissionError, setSubmissionError] = useState('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isClaimed, setIsClaimed] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
   // const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { user } = useAuth();
+  const dispatch = useAppDispatch();
   const createSubmissionMutation = useCreateSubmission();
   const updateBountyMutation = useUpdateBounty();
 
@@ -92,13 +96,28 @@ function BountyCard({
     });
   };
 
-  // Set initial claimed state based on user participation
+  // Check if bounty is in user's submitted bounties
+  const checkIfBountyIsSubmitted = () => {
+    if (!user || !bounty?.id) return false;
+    
+    const submittedBounties = user.fields['Submitted Bounties'] || [];
+    return submittedBounties.some((item: string | Bounty) => {
+      const itemId = typeof item === 'string' ? item : item.id;
+      return itemId === bounty.id;
+    });
+  };
+
+  // Set initial claimed and submitted state based on user participation
   React.useEffect(() => {
     if (bountyDetailsData && user) {
       const isParticipant = checkIfUserIsParticipant();
+      const isBountySubmitted = checkIfBountyIsSubmitted();
+      
+      
       setIsClaimed(isParticipant);
+      setIsSubmitted(isBountySubmitted);
     }
-  }, [bountyDetailsData, user]);
+  }, [bountyDetailsData, user, user?.fields?.['Active Bounties'], user?.fields?.['Submitted Bounties']]);
 
   const handleClaimBounty = async () => {
     if (!user || !bounty?.id) {
@@ -158,25 +177,37 @@ function BountyCard({
       // Add current user to participants
       const updatedParticipants = [...participantIds, user.id];
 
-      // Update the bounty with new participants - wait for this to complete
+      // Update the bounty with new participants and status - wait for this to complete
+      const shouldUpdateStatus = participantCount === 0; // First participant
       const updatedBounty = await updateBountyMutation.mutateAsync({
         bountyId: bounty.id,
         updates: {
           Participants: updatedParticipants,
+          ...(shouldUpdateStatus && { Status: 'In progress' })
         },
       });
 
       // Also update the user's Active Bounties field
       if (user && updatedBounty && updatedBounty.id) {
         const currentUserActiveBounties = user.fields['Active Bounties'] || [];
-        const updatedUserActiveBounties = [
-          ...currentUserActiveBounties,
-          bounty.id,
-        ];
+        
+        // Convert to string IDs and add bounty to Active Bounties
+        const activeBountyIds = currentUserActiveBounties.map((item: string | Bounty) => 
+          typeof item === 'string' ? item : item.id
+        );
+        const updatedUserActiveBounties = [...activeBountyIds, bounty.id];
 
         await airtableClient.updateRecord('Users', user.id, {
           'Active Bounties': updatedUserActiveBounties,
         });
+
+        // Update Redux state to reflect the change immediately
+        dispatch(updateUser({
+          fields: {
+            ...user.fields,
+            'Active Bounties': updatedUserActiveBounties,
+          }
+        }));
       }
 
       // Only set claimed state after successful Airtable update
@@ -280,16 +311,37 @@ function BountyCard({
     setIsSubmitting(true);
 
     try {
-      // const submission = await createSubmissionMutation.mutateAsync({
-      //   Url: submissionUrl,
-      //   Bounties: [bounty.id],
-      //   Comment: comments.trim() || undefined,
-      // });
+      // 1. Create submission
       await createSubmissionMutation.mutateAsync({
         Url: submissionUrl,
         Bounties: [bounty.id],
         Comment: comments.trim() || undefined,
+        User: user ? [user.id] : undefined,
       });
+
+      // 2. Add bounty to Submitted Bounties (keep in Active Bounties)
+      if (user) {
+        const currentSubmittedBounties = user.fields['Submitted Bounties'] || [];
+        
+        // Convert to string IDs and add bounty to Submitted Bounties (don't remove from Active Bounties)
+        const submittedBountyIds = currentSubmittedBounties.map((item: string | Bounty) => 
+          typeof item === 'string' ? item : item.id
+        );
+        const updatedSubmittedBounties = [...submittedBountyIds, bounty.id];
+        
+        // Update user record in Airtable - only update Submitted Bounties
+        await airtableClient.updateRecord('Users', user.id, {
+          'Submitted Bounties': updatedSubmittedBounties,
+        });
+
+        // Update Redux state to reflect the change immediately
+        dispatch(updateUser({
+          fields: {
+            ...user.fields,
+            'Submitted Bounties': updatedSubmittedBounties,
+          }
+        }));
+      }
 
       setHasSubmitted(true);
       setOpenBountyDetails(false);
@@ -468,19 +520,36 @@ function BountyCard({
                         !canClaimBounty
                       }
                       className={`h-10 px-4 font-semibold text-sm transition-all duration-200 whitespace-nowrap ${
-                        isClaimed
-                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white cursor-not-allowed shadow-lg'
-                          : isClaiming
-                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white cursor-not-allowed shadow-lg'
-                            : !canClaimMoreBounties || !canClaimBounty
-                              ? 'bg-gray-500 hover:bg-gray-600 text-white cursor-not-allowed shadow-lg'
-                              : 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                        isSubmitted
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white cursor-not-allowed shadow-lg'
+                          : isClaimed
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white cursor-not-allowed shadow-lg'
+                            : isClaiming
+                              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white cursor-not-allowed shadow-lg'
+                              : !canClaimMoreBounties || !canClaimBounty
+                                ? 'bg-gray-500 hover:bg-gray-600 text-white cursor-not-allowed shadow-lg'
+                                : 'bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                       }`}
                     >
                       {isClaiming && (
                         <div className='w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2'></div>
                       )}
-                      {isClaimed ? (
+                      {isSubmitted ? (
+                        <span className='flex items-center gap-2'>
+                          <svg
+                            className='w-4 h-4'
+                            fill='currentColor'
+                            viewBox='0 0 20 20'
+                          >
+                            <path
+                              fillRule='evenodd'
+                              d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+                              clipRule='evenodd'
+                            />
+                          </svg>
+                          Submitted
+                        </span>
+                      ) : isClaimed ? (
                         <span className='flex items-center gap-2'>
                           <svg
                             className='w-4 h-4'
@@ -676,8 +745,8 @@ function BountyCard({
                     </div>
                   </div>
 
-                  {/* Submission Form - Only show if user has claimed the bounty */}
-                  {isClaimed && (
+                  {/* Submission Form - Only show if user has claimed the bounty but not yet submitted */}
+                  {isClaimed && !isSubmitted && (
                     <div className='space-y-4 p-4 bg-[#111111] rounded-lg border border-[#1F1F1F]'>
                       <h3 className='text-white font-semibold text-sm'>
                         Submit Your Work

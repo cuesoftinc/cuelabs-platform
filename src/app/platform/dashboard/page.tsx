@@ -20,9 +20,10 @@ import {
 } from '@/components/ui/card';
 
 import ProjectCard from '@/components/custom/dashboard/project-card';
+import EarningsChart from '@/components/custom/dashboard/earnings-chart';
 
 import cueCurrency from '@/svgs/cue-currency-dashboard.svg';
-import chart from '@/svgs/overview-chart.svg';
+// import chart from '@/svgs/overview-chart.svg'; // Commented out - using EarningsGraph component instead
 import LeaderboardTable from '@/components/custom/dashboard/leaderboard-table';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
 import { PiCalendarBlankFill } from 'react-icons/pi';
@@ -243,7 +244,8 @@ function DashboardPage() {
           </CardHeader>
 
           <CardContent className='p-0 min-h-[60%]'>
-            <Image src={chart} alt='Earnings Chart' className='w-full h-full' />
+            {/* <Image src={chart} alt='Earnings Chart' className='w-full h-full' /> */}
+            <EarningsChart />
           </CardContent>
         </Card>
 

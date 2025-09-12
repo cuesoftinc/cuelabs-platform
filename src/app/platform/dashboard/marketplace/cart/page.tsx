@@ -13,6 +13,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { clearCart } from '@/store/slices/cartSlice';
 import CartItemComponent from '@/components/custom/dashboard/marketplace/cart-item';
 import { useFetchMarketItem, useCreateOrderItems, useCreateOrder } from '@/hooks/queries/useMarketplace';
+import { useAuth } from '@/hooks/queries/useAuth';
 import { MarketItem } from '@/types/market';
 import CustomSpinner from '@/components/custom/custom-spinner';
 
@@ -21,6 +22,7 @@ function CartPage() {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const { items, total, itemCount } = useAppSelector((state) => state.cart);
+  const { user } = useAuth();
   
   const [directOrderItem, setDirectOrderItem] = useState<MarketItem | null>(null);
   const [directOrderQuantity, setDirectOrderQuantity] = useState(1);
@@ -61,6 +63,20 @@ function CartPage() {
     setOrderError('');
 
     try {
+      // Check if user is logged in
+      if (!user) {
+        throw new Error('You must be logged in to place an order');
+      }
+
+      // Get the order total
+      const orderTotal = directOrderItem ? directOrderTotal : total;
+      
+      // Check if user has sufficient balance
+      const userBalance = user.fields?.['Wallet Balance'] || 0;
+      if (userBalance < orderTotal) {
+        throw new Error(`Insufficient balance. You have ${userBalance.toFixed(2)} Cues but need ${orderTotal.toFixed(2)} Cues for this order.`);
+      }
+
       if (directOrderItem) {
         // Handle direct order checkout
         await processDirectOrder();
@@ -408,7 +424,9 @@ function CartPage() {
                 </div>
 
                 <div className='flex justify-between'>
-                  <span className='text-sm font-medium text-auth-text'>Tax:</span>
+                  <span className='text-sm font-medium text-auth-text'>
+                    Your Balance:
+                  </span>
                   <div>
                     <p className='flex items-center gap-1'>
                       <Image
@@ -417,12 +435,17 @@ function CartPage() {
                         width={12}
                         height={12}
                       />
-                      <span className='text-white text-sm leading-[175%] font-medium'>
-                        {(displayTotal * 0.1).toFixed(2)}
+                      <span className={`text-sm leading-[175%] font-medium ${
+                        user && (user.fields?.['Wallet Balance'] || 0) >= (directOrderItem ? directOrderTotal : total)
+                          ? 'text-green-400'
+                          : 'text-red-400'
+                      }`}>
+                        {(user?.fields?.['Wallet Balance'] || 0).toFixed(2)}
                       </span>
                     </p>
                   </div>
                 </div>
+
               </div>
 
               <div className='flex justify-between my-8'>
@@ -436,7 +459,7 @@ function CartPage() {
                       height={12}
                     />
                     <span className='text-white text-sm leading-[175%] font-medium'>
-                      {(displayTotal * 1.1).toFixed(2)}
+                      {displayTotal.toFixed(2)}
                     </span>
                   </p>
                 </div>
@@ -450,7 +473,7 @@ function CartPage() {
 
               <Button 
                 onClick={handleCheckout}
-                disabled={isProcessingOrder}
+                disabled={isProcessingOrder || !user || (user.fields?.['Wallet Balance'] || 0) < (directOrderItem ? directOrderTotal : total)}
                 className='btn-main-p w-full'
               >
                 {isProcessingOrder ? (

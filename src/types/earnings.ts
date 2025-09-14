@@ -3,9 +3,9 @@
 import type { AirtableRecord, AirtableResponse } from '@/lib/airtable';
 
 export interface EarningFields {
+  'S/N'?: number;
   User: string[];
   Bounty: string[];
-  'S/N'?: number;
   [key: string]: any; // Allow additional unknown fields
 }
 

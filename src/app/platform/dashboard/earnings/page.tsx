@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import EarningsGraph from '@/components/custom/dashboard/earnings-graph';
+import EarningsChart from '@/components/custom/dashboard/earnings-chart';
 
 export default function EarningsPage() {
   return (
@@ -15,7 +15,7 @@ export default function EarningsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Earnings Graph */}
           <div className="lg:col-span-2 xl:col-span-2">
-            <EarningsGraph />
+            <EarningsChart />
           </div>
           
           {/* Additional Stats Cards */}

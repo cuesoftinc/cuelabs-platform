@@ -8,8 +8,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Tooltip,
-  Dot
+  Tooltip
 } from 'recharts';
 import { TrendingUp, Calendar } from 'lucide-react';
 import { useEarnings } from '@/hooks/queries/useEarnings';
@@ -76,8 +75,8 @@ const processEarningsData = (earnings: Earning[], bounties: Bounty[]): ChartData
 };
 
 // Custom dot component for data points
-const CustomDot = (props: any) => {
-  const { cx, cy, payload } = props;
+const CustomDot = (props: { cx?: number; cy?: number; [key: string]: unknown }) => {
+  const { cx, cy } = props;
   
   return (
     <circle
@@ -92,7 +91,11 @@ const CustomDot = (props: any) => {
 };
 
 // Custom tooltip
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 shadow-lg">
@@ -119,12 +122,6 @@ export default function EarningsChart() {
     }
     return []; // Empty array for empty state
   }, [earnings, bounties]);
-  
-  // Calculate total earnings for the week
-  const totalEarnings = useMemo(() => {
-    return chartData.reduce((total, point) => total + point.amount, 0);
-  }, [chartData]);
-  
   
   if (isLoading) {
     return (
@@ -201,7 +198,10 @@ export default function EarningsChart() {
             dataKey="amount"
             stroke="url(#gradient)"
             strokeWidth={2}
-            dot={<CustomDot />}
+            dot={(props) => {
+              const { key, ...otherProps } = props;
+              return <CustomDot key={key} {...otherProps} />;
+            }}
             activeDot={{ r: 6, fill: 'white', stroke: 'url(#gradient)', strokeWidth: 2 }}
           />
         </LineChart>

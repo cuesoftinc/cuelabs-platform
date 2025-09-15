@@ -9,6 +9,7 @@ export interface BountyFields {
   Status: 'Todo' | 'In progress' | 'Done' | 'New';
   Reward: number;
   Genre: string;
+  Winner: string[];
   'Due Date': string;
   'Created At': string;
   'Modified At': string;

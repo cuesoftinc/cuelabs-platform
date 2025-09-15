@@ -7,6 +7,8 @@ export interface SubmissionFields {
   Bounties?: string[];
   Attachment?: any;
   Comment?: string;
+  User?: string[];
+  Status?: 'New' | 'Accepted' | 'Declined' | 'Pending';
   [key: string]: any; // Allow additional unknown fields
 }
 

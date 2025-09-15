@@ -35,7 +35,9 @@ export interface UserFields {
   Attachments?: Attachment[];
   Status?: string | 'Inactive' | 'Pending' | 'Active';
   'Active Bounties'?: Bounty[] | string[];
+  'Submitted Bounties'?: Bounty[] | string[];
   'Completed Bounties'?: Bounty[] | string[];
+  Access?: 'User' | 'Admin';
   Rank?: number;
   Address?: string;
   Projects?: Project[] | string[];

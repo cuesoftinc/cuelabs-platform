@@ -20,9 +20,10 @@ import {
 } from '@/components/ui/card';
 
 import ProjectCard from '@/components/custom/dashboard/project-card';
+import EarningsChart from '@/components/custom/dashboard/earnings-chart';
 
 import cueCurrency from '@/svgs/cue-currency-dashboard.svg';
-import chart from '@/svgs/overview-chart.svg';
+// import chart from '@/svgs/overview-chart.svg'; // Commented out - using EarningsGraph component instead
 import LeaderboardTable from '@/components/custom/dashboard/leaderboard-table';
 import CustomSelectFilter from '@/components/custom/dashboard/custom-select-filter';
 import { PiCalendarBlankFill } from 'react-icons/pi';
@@ -57,7 +58,7 @@ function DashboardPage() {
 
   // Use the authenticated user from Redux instead of hardcoded ID
   const userId = user?.id;
-  
+
   // Fetch the user data
   const {
     data: userData,
@@ -76,65 +77,72 @@ function DashboardPage() {
   const totalEarnings = userData?.fields['Total Earnings'] || 0;
 
   // Get user's active bounties from their profile
-  const userActiveBounties: (string | Bounty)[] = userData?.fields['Active Bounties'] || [];
-  
+  const userActiveBounties: (string | Bounty)[] =
+    userData?.fields['Active Bounties'] || [];
+
   // Check if user can claim more bounties (limit of 3)
   const canClaimMoreBounties = (userActiveBounties?.length || 0) < 3;
   const claimedBountiesCount = userActiveBounties?.length || 0;
 
   // Fetch the actual bounty details for the user's active bounties
-  const { data: claimedBounties, isLoading: isLoadingClaimedBounties } = useQuery({
-    queryKey: ['user-active-bounties', userId, userActiveBounties],
-    queryFn: async () => {
-      if (!userActiveBounties || userActiveBounties.length === 0) {
-        return [];
-      }
-
-      // Extract bounty IDs (handle both string IDs and Bounty objects)
-      const bountyIds = userActiveBounties.map((bounty) => {
-        if (typeof bounty === 'string') {
-          return bounty;
-        } else if (bounty && typeof bounty === 'object' && 'id' in bounty) {
-          return bounty.id;
+  const { data: claimedBounties, isLoading: isLoadingClaimedBounties } =
+    useQuery({
+      queryKey: ['user-active-bounties', userId, userActiveBounties],
+      queryFn: async () => {
+        if (!userActiveBounties || userActiveBounties.length === 0) {
+          return [];
         }
-        return null;
-      }).filter(Boolean) as string[];
 
-      if (bountyIds.length === 0) {
-        return [];
-      }
+        // Extract bounty IDs (handle both string IDs and Bounty objects)
+        const bountyIds = userActiveBounties
+          .map((bounty) => {
+            if (typeof bounty === 'string') {
+              return bounty;
+            } else if (bounty && typeof bounty === 'object' && 'id' in bounty) {
+              return bounty.id;
+            }
+            return null;
+          })
+          .filter(Boolean) as string[];
 
-      // Fetch bounty details using the IDs
-      const bountyRecordsQuery = bountyIds
-        .map((id) => `RECORD_ID()="${id}"`)
-        .join(',');
-      
-      const response = await airtableClient.getRecords('Bounties', {
-        filterByFormula: `OR(${bountyRecordsQuery})`,
-      });
-      
-      return response.records || [];
-    },
-    enabled: !!userData && !!userActiveBounties && userActiveBounties.length > 0,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+        if (bountyIds.length === 0) {
+          return [];
+        }
+
+        // Fetch bounty details using the IDs
+        const bountyRecordsQuery = bountyIds
+          .map((id) => `RECORD_ID()="${id}"`)
+          .join(',');
+
+        const response = await airtableClient.getRecords('Bounties', {
+          filterByFormula: `OR(${bountyRecordsQuery})`,
+        });
+
+        return response.records || [];
+      },
+      enabled:
+        !!userData && !!userActiveBounties && userActiveBounties.length > 0,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    });
 
   // Find current user's rank
   const getUserRank = () => {
     if (!userData || !usersData?.records) return null;
-    
-    const sortedUsers = [...usersData.records].sort((a, b) => 
-      (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0)
+
+    const sortedUsers = [...usersData.records].sort(
+      (a, b) =>
+        (b.fields['Total Earnings'] || 0) - (a.fields['Total Earnings'] || 0),
     );
-    
-    const userIndex = sortedUsers.findIndex(user => user.id === userData.id);
+
+    const userIndex = sortedUsers.findIndex((user) => user.id === userData.id);
     return userIndex >= 0 ? userIndex + 1 : null;
   };
 
   const userRank = getUserRank();
-  const userRankPercentage = usersData?.records ? 
-    Math.round(((userRank || 0) / usersData.records.length) * 100) : 0;
+  const userRankPercentage = usersData?.records
+    ? Math.round(((userRank || 0) / usersData.records.length) * 100)
+    : 0;
 
   // Select 3 random projects
   const getRandomProjects = () => {
@@ -149,7 +157,6 @@ function DashboardPage() {
   const recommendedProjects = getRandomProjects();
 
   // User is already set in Redux from the login flow, no need to set it again
-
 
   // Show loading state while fetching user
   if (isLoadingUser) {
@@ -237,7 +244,8 @@ function DashboardPage() {
           </CardHeader>
 
           <CardContent className='p-0 min-h-[60%]'>
-            <Image src={chart} alt='Earnings Chart' className='w-full h-full' />
+            {/* <Image src={chart} alt='Earnings Chart' className='w-full h-full' /> */}
+            <EarningsChart />
           </CardContent>
         </Card>
 
@@ -284,7 +292,9 @@ function DashboardPage() {
 
               <div className='mt-4'>
                 <span className='text-white text-3xl lg:text-[40px] leading-[32px] font-semibold'>
-                  {userRank ? `${userRank}${getOrdinalSuffix(userRank)}` : 'N/A'}
+                  {userRank
+                    ? `${userRank}${getOrdinalSuffix(userRank)}`
+                    : 'N/A'}
                 </span>
               </div>
               {/* </div> */}
@@ -316,13 +326,15 @@ function DashboardPage() {
         {isLoadingClaimedBounties ? (
           <div className='flex items-center justify-center py-8'>
             <CustomSpinner />
-            <span className='ml-2 text-white'>Loading your bounties...</span>
           </div>
         ) : claimedBounties && claimedBounties.length > 0 ? (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {claimedBounties.map((bounty) => (
               <div key={bounty.id} className='h-full'>
-                <BountyCard bounty={bounty as Bounty} canClaimMoreBounties={canClaimMoreBounties} />
+                <BountyCard
+                  bounty={bounty as Bounty}
+                  canClaimMoreBounties={canClaimMoreBounties}
+                />
               </div>
             ))}
           </div>
@@ -334,12 +346,15 @@ function DashboardPage() {
                 No Bounties Claimed Yet
               </h3>
               <p className='text-sm text-auth-text'>
-                Start claiming bounties to earn rewards and build your portfolio.
+                Start claiming bounties to earn rewards and build your
+                portfolio.
               </p>
             </div>
-            <Button 
+            <Button
               className='btn-main-p'
-              onClick={() => window.location.href = '/platform/dashboard/projects'}
+              onClick={() =>
+                (window.location.href = '/platform/dashboard/projects')
+              }
             >
               Browse Projects
             </Button>

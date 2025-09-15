@@ -36,6 +36,8 @@ type NavBarProps = {
 };
 
 function NavBar({ setOpen }: NavBarProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _setOpen = setOpen;
   const [openMenu, setOpenMenu] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -69,7 +71,6 @@ function NavBar({ setOpen }: NavBarProps) {
   // const handleWaitlistClick = () => {
   //   setOpen(true);
   // };
-  console.log(setOpen);
 
   return (
     <nav className='fixed w-full z-10 shadow-lg bg-product-walkthrough-bg'>

@@ -70,7 +70,8 @@ export default function Home() {
       img: upstat,
       name: 'Upstat',
       description:
-        "Upstat is a comprehensive web application designed to monitor the health and performance of your websites, servers, and APIs. Equipped with real-time charts, status indicators, and incident reporting, Upstat provides a centralized dashboard that allows you to keep tabs on your digital assets. With its intuitive interface and robust analytics, you can quickly identify issues, analyze trends, and take proactive measures to ensure optimal uptime and user experience. Whether you're a small business or a large enterprise, Upstat offers a scalable solution to meet your monitoring needs."
+        "Upstat is a comprehensive web application designed to monitor the health and performance of your websites, servers, and APIs. Equipped with real-time charts, status indicators, and incident reporting, Upstat provides a centralized dashboard that allows you to keep tabs on your digital assets. With its intuitive interface and robust analytics, you can quickly identify issues, analyze trends, and take proactive measures to ensure optimal uptime and user experience. Whether you're a small business or a large enterprise, Upstat offers a scalable solution to meet your monitoring needs.",
+      url: 'https://github.com/cuesoftinc/upstat',
       tools: [
         { name: 'Javascript', icon: <FaSquareJs /> },
         { name: 'Typescript', icon: <BiLogoTypescript /> },
@@ -83,6 +84,7 @@ export default function Home() {
       name: 'Storefront',
       description:
         "Storefront is a customizable online platform designed primarily for businesses to showcase and sell their products to customers. Whether a retailer selling handmade jewelry or a large-scale enterprise, Storefront offers a user-friendly interface where customers can easily browse and make purchases. While the platform is tailored for customer interactions and sales, it does not handle inventory management. Instead, the backend business operations, including inventory management and order processing, are seamlessly integrated with Cueprise. This combination ensures that while customers enjoy a streamlined shopping experience on Storefront, business owners can efficiently manage their operations using Cueprise. The platform is flexible, catering to businesses of all sizes, and can be tailored to match a brand's unique look and functionality.",
+      url: 'https://github.com/cuesoftinc/storefront',
       tools: [
         { name: 'Typescript', icon: <BiLogoTypescript /> },
         { name: 'CSS', icon: <IoLogoCss3 /> },
@@ -94,6 +96,7 @@ export default function Home() {
       name: 'Expendit',
       description:
         "Expendit is a web application designed to simplify the task of estimating and tracking personal or business expenses. With an easy-to-use interface, the app allows users to input expenses on the go, categorize them, and generate real-time reports for better financial management. Whether you're looking to keep tabs on daily expenditures, plan a budget, or analyze spending trends, Expendit offers a range of features to help you achieve your financial goals. Its cloud-based architecture ensures that your data is accessible from any device, making it a convenient and reliable tool for expense management.",
+      url: 'https://github.com/cuesoftinc/expendit',
       tools: [
         { name: 'Typescript', icon: <BiLogoTypescript /> },
         { name: 'CSS', icon: <IoLogoCss3 /> },

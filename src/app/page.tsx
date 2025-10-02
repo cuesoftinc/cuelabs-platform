@@ -70,7 +70,7 @@ export default function Home() {
       img: upstat,
       name: 'Upstat',
       description:
-        "Upstat is a comprehensive web application for monitoring the performance of your websites, servers, and APIs. It provides a centralized dashboard with real-time charts and robust analytics, helping you quickly identify issues and ensure optimal uptime for your users.",
+        'Upstat is a comprehensive web application for monitoring the performance of your websites, servers, and APIs. It provides a centralized dashboard with real-time charts and robust analytics, helping you quickly identify issues and ensure optimal uptime for your users.',
       url: 'https://github.com/cuesoftinc/upstat',
       tools: [
         { name: 'Javascript', icon: <FaSquareJs /> },
@@ -83,7 +83,7 @@ export default function Home() {
       img: storefront,
       name: 'Storefront',
       description:
-        "Storefront is a customizable online platform for businesses to sell products. It provides a user-friendly interface for customer sales. For backend operations like inventory and order processing, it integrates seamlessly with Cueprise.",
+        'Storefront is a customizable online platform for businesses to sell products. It provides a user-friendly interface for customer sales. For backend operations like inventory and order processing, it integrates seamlessly with Cueprise.',
       url: 'https://github.com/cuesoftinc/storefront',
       tools: [
         { name: 'Typescript', icon: <BiLogoTypescript /> },
@@ -95,7 +95,7 @@ export default function Home() {
       img: expendit,
       name: 'Expendit',
       description:
-        "Expendit is a web application for easily estimating and tracking expenses. With its intuitive interface, you can categorize expenditures and generate real-time reports to better manage your finances. Its cloud-based architecture ensures your data is accessible on any device.",
+        'Expendit is a web application for easily estimating and tracking expenses. With its intuitive interface, you can categorize expenditures and generate real-time reports to better manage your finances. Its cloud-based architecture ensures your data is accessible on any device.',
       url: 'https://github.com/cuesoftinc/expendit',
       tools: [
         { name: 'Typescript', icon: <BiLogoTypescript /> },

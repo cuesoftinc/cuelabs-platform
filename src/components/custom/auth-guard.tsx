@@ -41,9 +41,10 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
             Access Restricted
           </h2>
           <p className='text-auth-text mb-6'>
-            You need to be logged in to access this page. Please sign in to continue.
+            You need to be logged in to access this page. Please sign in to
+            continue.
           </p>
-          <Button 
+          <Button
             onClick={() => router.push('/platform/auth/login')}
             className='btn-main-p'
           >

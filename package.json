@@ -1,12 +1,44 @@
 {
   "name": "cuelabs-platform",
-  "version": "1.1.1",
+  "version": "1.1.2",
+  "description": "CueLABS™ - A developer platform for AI innovation and global impact. Features bounty system, project collaboration, marketplace, and community-driven development.",
   "private": true,
+  "homepage": "https://github.com/cuesoftinc/cuelabs-platform#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cuesoftinc/cuelabs-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cuesoftinc/cuelabs-platform/issues"
+  },
+  "keywords": [
+    "developer-platform",
+    "bounty-system",
+    "ai-innovation",
+    "open-source",
+    "community",
+    "collaboration",
+    "marketplace",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "airtable",
+    "github-oauth"
+  ],
+  "author": {
+    "name": "Cuesoft",
+    "url": "https://cuesoft.io"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "command -v pre-commit >/dev/null 2>&1 && pre-commit install --hook-type pre-commit --hook-type commit-msg || echo 'pre-commit not installed, skipping hook installation'",
+    "pre-commit:install": "pre-commit install --hook-type pre-commit --hook-type commit-msg",
+    "pre-commit:run": "pre-commit run --all-files"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
@@ -39,7 +71,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

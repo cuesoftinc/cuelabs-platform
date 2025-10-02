@@ -47,7 +47,7 @@ function ProductDetailsPage() {
     mainImage?.thumbnails?.small?.url;
 
   // Check if this item is in the cart
-  const isInCart = items.some(cartItem => cartItem.item.id === itemId);
+  const isInCart = items.some((cartItem) => cartItem.item.id === itemId);
 
   // Reset error state when item data changes (new URLs)
   useEffect(() => {
@@ -92,10 +92,13 @@ function ProductDetailsPage() {
   const handleImageError = () => {
     if (retryCount < maxRetries) {
       // Retry after a short delay
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        setImageError(false); // Reset to try again
-      }, 1000 * (retryCount + 1)); // Exponential backoff: 1s, 2s
+      setTimeout(
+        () => {
+          setRetryCount((prev) => prev + 1);
+          setImageError(false); // Reset to try again
+        },
+        1000 * (retryCount + 1),
+      ); // Exponential backoff: 1s, 2s
     } else {
       setImageError(true);
     }
@@ -108,11 +111,13 @@ function ProductDetailsPage() {
       return;
     }
 
-    dispatch(addToCart({
-      item: item as MarketItem,
-      quantity,
-      selectedSize,
-    }));
+    dispatch(
+      addToCart({
+        item: item as MarketItem,
+        quantity,
+        selectedSize,
+      }),
+    );
   };
 
   return (
@@ -151,7 +156,9 @@ function ProductDetailsPage() {
           ) : (
             <div className='w-full h-[408px] bg-[#1F1F1F] rounded-[8px] flex items-center justify-center'>
               <span className='text-auth-text text-lg'>
-                {retryCount > 0 && retryCount < maxRetries ? 'Retrying...' : 'No Image Available'}
+                {retryCount > 0 && retryCount < maxRetries
+                  ? 'Retrying...'
+                  : 'No Image Available'}
               </span>
             </div>
           )}
@@ -259,7 +266,7 @@ function ProductDetailsPage() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={handleAddToCart}
             className={`uppercase mt-12 btn-main-p ${
               isInCart ? 'opacity-50 cursor-not-allowed' : ''

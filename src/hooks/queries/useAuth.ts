@@ -1,9 +1,5 @@
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import {
-  loginSuccess,
-  logout,
-  updateUser,
-} from '@/store/slices/authSlice';
+import { loginSuccess, logout, updateUser } from '@/store/slices/authSlice';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/users';
@@ -19,19 +15,21 @@ export const useAuth = () => {
   const handleLogout = async () => {
     // Clear Redux state
     dispatch(logout());
-    
+
     // Clear NextAuth session
     await signOut({ redirect: false });
-    
+
     // Redirect to login page
     router.push('/platform/auth/login');
   };
 
   const setCurrentUser = (user: User) => {
-    dispatch(loginSuccess({
-      user,
-      token: 'nextauth-session', // Indicates we're using NextAuth
-    }));
+    dispatch(
+      loginSuccess({
+        user,
+        token: 'nextauth-session', // Indicates we're using NextAuth
+      }),
+    );
   };
 
   const clearAuth = () => {
@@ -41,16 +39,16 @@ export const useAuth = () => {
   // Function to refresh user data from Airtable
   const refreshUserData = useCallback(async () => {
     if (!user?.id || !isAuthenticated) return;
-    
+
     try {
       const response = await fetch(`/api/users/${user.id}`);
-      
+
       if (!response.ok) {
         return;
       }
 
       const freshUserData = await response.json();
-      
+
       // Update Redux with fresh data
       dispatch(updateUser(freshUserData));
     } catch {
@@ -63,7 +61,7 @@ export const useAuth = () => {
     if (!isAuthenticated || !user?.id) return;
 
     const interval = setInterval(refreshUserData, 5 * 60 * 1000); // 5 minutes
-    
+
     return () => clearInterval(interval);
   }, [refreshUserData, isAuthenticated, user?.id]);
 
@@ -76,7 +74,7 @@ export const useAuth = () => {
     };
 
     window.addEventListener('focus', handleFocus);
-    
+
     return () => window.removeEventListener('focus', handleFocus);
   }, [refreshUserData, isAuthenticated, user?.id]);
 

@@ -99,7 +99,7 @@ function BountyCard({
   // Check if bounty is in user's submitted bounties
   const checkIfBountyIsSubmitted = () => {
     if (!user || !bounty?.id) return false;
-    
+
     const submittedBounties = user.fields['Submitted Bounties'] || [];
     return submittedBounties.some((item: string | Bounty) => {
       const itemId = typeof item === 'string' ? item : item.id;
@@ -112,12 +112,16 @@ function BountyCard({
     if (bountyDetailsData && user) {
       const isParticipant = checkIfUserIsParticipant();
       const isBountySubmitted = checkIfBountyIsSubmitted();
-      
-      
+
       setIsClaimed(isParticipant);
       setIsSubmitted(isBountySubmitted);
     }
-  }, [bountyDetailsData, user, user?.fields?.['Active Bounties'], user?.fields?.['Submitted Bounties']]);
+  }, [
+    bountyDetailsData,
+    user,
+    user?.fields?.['Active Bounties'],
+    user?.fields?.['Submitted Bounties'],
+  ]);
 
   const handleClaimBounty = async () => {
     if (!user || !bounty?.id) {
@@ -183,17 +187,18 @@ function BountyCard({
         bountyId: bounty.id,
         updates: {
           Participants: updatedParticipants,
-          ...(shouldUpdateStatus && { Status: 'In progress' })
+          ...(shouldUpdateStatus && { Status: 'In progress' }),
         },
       });
 
       // Also update the user's Active Bounties field
       if (user && updatedBounty && updatedBounty.id) {
         const currentUserActiveBounties = user.fields['Active Bounties'] || [];
-        
+
         // Convert to string IDs and add bounty to Active Bounties
-        const activeBountyIds = currentUserActiveBounties.map((item: string | Bounty) => 
-          typeof item === 'string' ? item : item.id
+        const activeBountyIds = currentUserActiveBounties.map(
+          (item: string | Bounty) =>
+            typeof item === 'string' ? item : item.id,
         );
         const updatedUserActiveBounties = [...activeBountyIds, bounty.id];
 
@@ -202,12 +207,14 @@ function BountyCard({
         });
 
         // Update Redux state to reflect the change immediately
-        dispatch(updateUser({
-          fields: {
-            ...user.fields,
-            'Active Bounties': updatedUserActiveBounties,
-          }
-        }));
+        dispatch(
+          updateUser({
+            fields: {
+              ...user.fields,
+              'Active Bounties': updatedUserActiveBounties,
+            },
+          }),
+        );
       }
 
       // Only set claimed state after successful Airtable update
@@ -321,26 +328,30 @@ function BountyCard({
 
       // 2. Add bounty to Submitted Bounties (keep in Active Bounties)
       if (user) {
-        const currentSubmittedBounties = user.fields['Submitted Bounties'] || [];
-        
+        const currentSubmittedBounties =
+          user.fields['Submitted Bounties'] || [];
+
         // Convert to string IDs and add bounty to Submitted Bounties (don't remove from Active Bounties)
-        const submittedBountyIds = currentSubmittedBounties.map((item: string | Bounty) => 
-          typeof item === 'string' ? item : item.id
+        const submittedBountyIds = currentSubmittedBounties.map(
+          (item: string | Bounty) =>
+            typeof item === 'string' ? item : item.id,
         );
         const updatedSubmittedBounties = [...submittedBountyIds, bounty.id];
-        
+
         // Update user record in Airtable - only update Submitted Bounties
         await airtableClient.updateRecord('Users', user.id, {
           'Submitted Bounties': updatedSubmittedBounties,
         });
 
         // Update Redux state to reflect the change immediately
-        dispatch(updateUser({
-          fields: {
-            ...user.fields,
-            'Submitted Bounties': updatedSubmittedBounties,
-          }
-        }));
+        dispatch(
+          updateUser({
+            fields: {
+              ...user.fields,
+              'Submitted Bounties': updatedSubmittedBounties,
+            },
+          }),
+        );
       }
 
       setHasSubmitted(true);

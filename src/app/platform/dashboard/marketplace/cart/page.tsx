@@ -12,7 +12,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { clearCart } from '@/store/slices/cartSlice';
 import CartItemComponent from '@/components/custom/dashboard/marketplace/cart-item';
-import { useFetchMarketItem, useCreateOrderItems, useCreateOrder } from '@/hooks/queries/useMarketplace';
+import {
+  useFetchMarketItem,
+  useCreateOrderItems,
+  useCreateOrder,
+} from '@/hooks/queries/useMarketplace';
 import { useAuth } from '@/hooks/queries/useAuth';
 import { MarketItem } from '@/types/market';
 import CustomSpinner from '@/components/custom/custom-spinner';
@@ -23,8 +27,10 @@ function CartPage() {
   const dispatch = useAppDispatch();
   const { items, total, itemCount } = useAppSelector((state) => state.cart);
   const { user } = useAuth();
-  
-  const [directOrderItem, setDirectOrderItem] = useState<MarketItem | null>(null);
+
+  const [directOrderItem, setDirectOrderItem] = useState<MarketItem | null>(
+    null,
+  );
   const [directOrderQuantity, setDirectOrderQuantity] = useState(1);
   const [directOrderSize, setDirectOrderSize] = useState<string>('');
   const [directOrderImageError, setDirectOrderImageError] = useState(false);
@@ -42,7 +48,8 @@ function CartPage() {
   const directOrderId = searchParams.get('directOrder');
 
   // Use the existing hook to fetch the direct order item
-  const { data: directOrderData, isLoading: isLoadingDirectOrder } = useFetchMarketItem(directOrderId || '');
+  const { data: directOrderData, isLoading: isLoadingDirectOrder } =
+    useFetchMarketItem(directOrderId || '');
 
   useEffect(() => {
     if (directOrderData) {
@@ -70,11 +77,13 @@ function CartPage() {
 
       // Get the order total
       const orderTotal = directOrderItem ? directOrderTotal : total;
-      
+
       // Check if user has sufficient balance
       const userBalance = user.fields?.['Wallet Balance'] || 0;
       if (userBalance < orderTotal) {
-        throw new Error(`Insufficient balance. You have ${userBalance.toFixed(2)} Cues but need ${orderTotal.toFixed(2)} Cues for this order.`);
+        throw new Error(
+          `Insufficient balance. You have ${userBalance.toFixed(2)} Cues but need ${orderTotal.toFixed(2)} Cues for this order.`,
+        );
       }
 
       if (directOrderItem) {
@@ -86,7 +95,8 @@ function CartPage() {
       }
     } catch (error) {
       console.error('Order creation error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create order';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create order';
       setOrderError(errorMessage);
     } finally {
       setIsProcessingOrder(false);
@@ -97,22 +107,25 @@ function CartPage() {
     if (!directOrderItem) return;
 
     // Create order items for direct order
-    const orderItemsData = [{
-      ItemId: directOrderItem.id,
-      Item: [directOrderItem.id],
-      Quantity: directOrderQuantity,
-      Size: directOrderSize || undefined,
-      Price: directOrderPrice,
-      Color: undefined, // Add color if you have color selection
-    }];
+    const orderItemsData = [
+      {
+        ItemId: directOrderItem.id,
+        Item: [directOrderItem.id],
+        Quantity: directOrderQuantity,
+        Size: directOrderSize || undefined,
+        Price: directOrderPrice,
+        Color: undefined, // Add color if you have color selection
+      },
+    ];
 
-    const createdOrderItems = await createOrderItemsMutation.mutateAsync(orderItemsData);
+    const createdOrderItems =
+      await createOrderItemsMutation.mutateAsync(orderItemsData);
 
     // Create the order
     const orderData = {
       OrderId: `ORD-${Date.now()}`,
       User: ['recCYY9sSXIeRjlvq'], // Using the provided user ID
-      Items: createdOrderItems.map(item => item.id), // Array of order item IDs
+      Items: createdOrderItems.map((item) => item.id), // Array of order item IDs
       Address: '20386 Chevron Drive, Lagos Island, Delaware(DE)',
       Phone: '+1 23455246337',
       Status: 'New', // Default status as requested
@@ -134,7 +147,7 @@ function CartPage() {
     }
 
     // Create order items for cart items
-    const orderItemsData = items.map(cartItem => ({
+    const orderItemsData = items.map((cartItem) => ({
       ItemId: cartItem.item.id,
       Item: [cartItem.item.id],
       Quantity: cartItem.quantity,
@@ -143,13 +156,14 @@ function CartPage() {
       Color: undefined, // Add color if you have color selection
     }));
 
-    const createdOrderItems = await createOrderItemsMutation.mutateAsync(orderItemsData);
+    const createdOrderItems =
+      await createOrderItemsMutation.mutateAsync(orderItemsData);
 
     // Create the order
     const orderData = {
       OrderId: `ORD-${Date.now()}`,
       User: ['recCYY9sSXIeRjlvq'], // Using the provided user ID
-      Items: createdOrderItems.map(item => item.id), // Array of order item IDs
+      Items: createdOrderItems.map((item) => item.id), // Array of order item IDs
       Address: '20386 Chevron Drive, Lagos Island, Delaware(DE)',
       Phone: '+1 23455246337',
       Status: 'New', // Default status as requested
@@ -170,9 +184,9 @@ function CartPage() {
 
   const handleDirectOrderQuantityChange = (increment: boolean) => {
     if (increment) {
-      setDirectOrderQuantity(prev => prev + 1);
+      setDirectOrderQuantity((prev) => prev + 1);
     } else if (directOrderQuantity > 1) {
-      setDirectOrderQuantity(prev => prev - 1);
+      setDirectOrderQuantity((prev) => prev - 1);
     }
   };
 
@@ -183,10 +197,13 @@ function CartPage() {
   const handleDirectOrderImageError = () => {
     if (directOrderRetryCount < maxRetries) {
       // Retry after a short delay
-      setTimeout(() => {
-        setDirectOrderRetryCount(prev => prev + 1);
-        setDirectOrderImageError(false); // Reset to try again
-      }, 1000 * (directOrderRetryCount + 1)); // Exponential backoff: 1s, 2s
+      setTimeout(
+        () => {
+          setDirectOrderRetryCount((prev) => prev + 1);
+          setDirectOrderImageError(false); // Reset to try again
+        },
+        1000 * (directOrderRetryCount + 1),
+      ); // Exponential backoff: 1s, 2s
     } else {
       setDirectOrderImageError(true);
     }
@@ -195,12 +212,13 @@ function CartPage() {
   // Calculate totals based on whether it's a direct order or regular cart
   const isDirectOrder = !!directOrderId;
   const displayItemCount = isDirectOrder ? directOrderQuantity : itemCount;
-  
+
   // Calculate total for direct order
-  const directOrderPrice = directOrderItem ? 
-    (typeof directOrderItem.fields.Cues === 'string' 
-      ? parseFloat(directOrderItem.fields.Cues) 
-      : (directOrderItem.fields.Cues as number) || 0) : 0;
+  const directOrderPrice = directOrderItem
+    ? typeof directOrderItem.fields.Cues === 'string'
+      ? parseFloat(directOrderItem.fields.Cues)
+      : (directOrderItem.fields.Cues as number) || 0
+    : 0;
   const directOrderTotal = directOrderPrice * directOrderQuantity;
   const displayTotal = isDirectOrder ? directOrderTotal : total;
 
@@ -234,7 +252,9 @@ function CartPage() {
           <div className='max-w-[667px] w-[65%]'>
             <div className='card-container p-4'>
               <h3 className='font-semibold text-16c leading-[100%] text-white border-b border-auth-border pb-5'>
-                {isDirectOrder ? 'Order Item' : `Your cart (${displayItemCount})`}
+                {isDirectOrder
+                  ? 'Order Item'
+                  : `Your cart (${displayItemCount})`}
               </h3>
 
               {isDirectOrder && directOrderItem ? (
@@ -243,7 +263,8 @@ function CartPage() {
                   <div className='flex items-center gap-4 p-4 border-b border-[#1F1F1F]'>
                     {/* Item Image */}
                     <div className='w-20 h-20 flex-shrink-0'>
-                      {directOrderItem.fields.Attachments?.[0] && !directOrderImageError ? (
+                      {directOrderItem.fields.Attachments?.[0] &&
+                      !directOrderImageError ? (
                         <Image
                           src={directOrderItem.fields.Attachments[0].url}
                           alt={directOrderItem.fields.Name || 'Product image'}
@@ -256,7 +277,10 @@ function CartPage() {
                       ) : (
                         <div className='w-full h-full bg-[#1F1F1F] rounded-[8px] flex items-center justify-center'>
                           <span className='text-auth-text text-xs'>
-                            {directOrderRetryCount > 0 && directOrderRetryCount < maxRetries ? 'Retrying...' : 'No Image'}
+                            {directOrderRetryCount > 0 &&
+                            directOrderRetryCount < maxRetries
+                              ? 'Retrying...'
+                              : 'No Image'}
                           </span>
                         </div>
                       )}
@@ -287,11 +311,11 @@ function CartPage() {
                       >
                         <span className='text-white'>-</span>
                       </Button>
-                      
+
                       <span className='text-white text-sm min-w-[2rem] text-center'>
                         {directOrderQuantity}
                       </span>
-                      
+
                       <Button
                         variant='outline'
                         size='sm'
@@ -309,34 +333,37 @@ function CartPage() {
                   </div>
 
                   {/* Size Selection for Direct Order */}
-                  {directOrderItem.fields.Sizes && directOrderItem.fields.Sizes.length > 0 && (
-                    <div className='mt-4 p-4 border-b border-[#1F1F1F]'>
-                      <span className='text-auth-text text-sm font-medium'>Select Size:</span>
-                      <div className='flex items-center gap-2 mt-2'>
-                        {directOrderItem.fields.Sizes.map((size: string) => (
-                          <div
-                            key={size}
-                            className={`w-[40px] h-[40px] rounded-[4px] text-xs leading-[24px] flex items-center justify-center cursor-pointer transition-all ${
-                              directOrderSize === size
-                                ? 'p-[2px] bg-gradient-to-r from-[#CB39C1] via-[#B91F7A] to-[#3534FF]'
-                                : 'border border-[#E6E7E8] text-[#5C5F6A]'
-                            }`}
-                            onClick={() => handleDirectOrderSizeSelect(size)}
-                          >
-                            {directOrderSize === size ? (
-                              <button className='block h-full w-full font-medium border-none rounded-[3px] cursor-pointer hover:scale-[0.97] text-center py-1.5 bg-[#0F0F0F]'>
-                                <span className='text-[12px] gradient-bg-text leading-[24px]'>
-                                  {size}
-                                </span>
-                              </button>
-                            ) : (
-                              <span>{size}</span>
-                            )}
-                          </div>
-                        ))}
+                  {directOrderItem.fields.Sizes &&
+                    directOrderItem.fields.Sizes.length > 0 && (
+                      <div className='mt-4 p-4 border-b border-[#1F1F1F]'>
+                        <span className='text-auth-text text-sm font-medium'>
+                          Select Size:
+                        </span>
+                        <div className='flex items-center gap-2 mt-2'>
+                          {directOrderItem.fields.Sizes.map((size: string) => (
+                            <div
+                              key={size}
+                              className={`w-[40px] h-[40px] rounded-[4px] text-xs leading-[24px] flex items-center justify-center cursor-pointer transition-all ${
+                                directOrderSize === size
+                                  ? 'p-[2px] bg-gradient-to-r from-[#CB39C1] via-[#B91F7A] to-[#3534FF]'
+                                  : 'border border-[#E6E7E8] text-[#5C5F6A]'
+                              }`}
+                              onClick={() => handleDirectOrderSizeSelect(size)}
+                            >
+                              {directOrderSize === size ? (
+                                <button className='block h-full w-full font-medium border-none rounded-[3px] cursor-pointer hover:scale-[0.97] text-center py-1.5 bg-[#0F0F0F]'>
+                                  <span className='text-[12px] gradient-bg-text leading-[24px]'>
+                                    {size}
+                                  </span>
+                                </button>
+                              ) : (
+                                <span>{size}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               ) : items.length > 0 ? (
                 <div className='mt-8'>
@@ -346,8 +373,10 @@ function CartPage() {
                 </div>
               ) : (
                 <div className='mt-8 text-center py-12'>
-                  <p className='text-auth-text text-lg mb-4'>Your cart is empty</p>
-                  <Button 
+                  <p className='text-auth-text text-lg mb-4'>
+                    Your cart is empty
+                  </p>
+                  <Button
                     onClick={handleContinueShopping}
                     className='btn-main-p'
                   >
@@ -435,21 +464,26 @@ function CartPage() {
                         width={12}
                         height={12}
                       />
-                      <span className={`text-sm leading-[175%] font-medium ${
-                        user && (user.fields?.['Wallet Balance'] || 0) >= (directOrderItem ? directOrderTotal : total)
-                          ? 'text-green-400'
-                          : 'text-red-400'
-                      }`}>
+                      <span
+                        className={`text-sm leading-[175%] font-medium ${
+                          user &&
+                          (user.fields?.['Wallet Balance'] || 0) >=
+                            (directOrderItem ? directOrderTotal : total)
+                            ? 'text-green-400'
+                            : 'text-red-400'
+                        }`}
+                      >
                         {(user?.fields?.['Wallet Balance'] || 0).toFixed(2)}
                       </span>
                     </p>
                   </div>
                 </div>
-
               </div>
 
               <div className='flex justify-between my-8'>
-                <span className='text-sm font-medium text-auth-text'>Total:</span>
+                <span className='text-sm font-medium text-auth-text'>
+                  Total:
+                </span>
                 <div>
                   <p className='flex items-center gap-1'>
                     <Image
@@ -471,9 +505,14 @@ function CartPage() {
                 </div>
               )}
 
-              <Button 
+              <Button
                 onClick={handleCheckout}
-                disabled={isProcessingOrder || !user || (user.fields?.['Wallet Balance'] || 0) < (directOrderItem ? directOrderTotal : total)}
+                disabled={
+                  isProcessingOrder ||
+                  !user ||
+                  (user.fields?.['Wallet Balance'] || 0) <
+                    (directOrderItem ? directOrderTotal : total)
+                }
                 className='btn-main-p w-full'
               >
                 {isProcessingOrder ? (
@@ -481,8 +520,10 @@ function CartPage() {
                     <CustomSpinner size='sm' />
                     {isDirectOrder ? 'Placing Order...' : 'Processing Order...'}
                   </div>
+                ) : isDirectOrder ? (
+                  'Place Order'
                 ) : (
-                  isDirectOrder ? 'Place Order' : 'Proceed to Checkout'
+                  'Proceed to Checkout'
                 )}
               </Button>
 

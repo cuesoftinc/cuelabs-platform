@@ -68,8 +68,6 @@ export interface OrderItemFields {
 export type OrderItem = AirtableRecord<OrderItemFields>;
 export type OrderItemsResponse = AirtableResponse<OrderItemFields>;
 
-
-
 export interface OrderFields {
   OrderId: string;
   User: string[];

@@ -237,7 +237,9 @@ export const useUpdateBounty = () => {
       // Invalidate all relevant queries to reflect changes
       queryClient.invalidateQueries({ queryKey: ['bounties'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['user-in-progress-bounties'] });
+      queryClient.invalidateQueries({
+        queryKey: ['user-in-progress-bounties'],
+      });
       queryClient.invalidateQueries({ queryKey: ['available-bounties'] });
       queryClient.invalidateQueries({ queryKey: ['user-completed-bounties'] });
       queryClient.invalidateQueries({ queryKey: ['all-completed-bounties'] });
@@ -287,17 +289,17 @@ export const useUserCompletedBounties = (userId: string) => {
     queryFn: async () => {
       const user = await airtableClient.getRecord('Users', userId);
       const completedBountyIds = user.fields['Completed Bounties'] || [];
-      
+
       if (completedBountyIds.length === 0) return [];
-      
+
       const bountyRecordsQuery = completedBountyIds
         .map((id: string) => `RECORD_ID()="${id}"`)
         .join(',');
-      
+
       const response = await airtableClient.getRecords('Bounties', {
         filterByFormula: `OR(${bountyRecordsQuery})`,
       });
-      
+
       return response.records || [];
     },
     enabled: !!userId,
@@ -312,7 +314,7 @@ export const useAllCompletedBounties = () => {
     queryKey: ['all-completed-bounties'],
     queryFn: async () => {
       const response = await airtableClient.getRecords('Bounties', {
-        filterByFormula: "{Status} = 'Done'"
+        filterByFormula: "{Status} = 'Done'",
       });
       return response.records || [];
     },
@@ -330,17 +332,17 @@ export const useUserInProgressBounties = (userId: string) => {
       const activeBountyIds = user.fields['Active Bounties'] || [];
       const submittedBountyIds = user.fields['Submitted Bounties'] || [];
       const allBountyIds = [...activeBountyIds, ...submittedBountyIds];
-      
+
       if (allBountyIds.length === 0) return [];
-      
+
       const bountyRecordsQuery = allBountyIds
         .map((id: string) => `RECORD_ID()="${id}"`)
         .join(',');
-      
+
       const response = await airtableClient.getRecords('Bounties', {
         filterByFormula: `OR(${bountyRecordsQuery})`,
       });
-      
+
       return response.records || [];
     },
     enabled: !!userId,
@@ -358,26 +360,30 @@ export const useAvailableBounties = (userId: string) => {
       const activeBountyIds = user.fields['Active Bounties'] || [];
       const submittedBountyIds = user.fields['Submitted Bounties'] || [];
       const completedBountyIds = user.fields['Completed Bounties'] || [];
-      
-      const userBountyIds = [...activeBountyIds, ...submittedBountyIds, ...completedBountyIds];
-      
+
+      const userBountyIds = [
+        ...activeBountyIds,
+        ...submittedBountyIds,
+        ...completedBountyIds,
+      ];
+
       if (userBountyIds.length === 0) {
         // If user has no bounties, return all non-completed bounties
         const response = await airtableClient.getRecords('Bounties', {
-          filterByFormula: "{Status} != 'Done'"
+          filterByFormula: "{Status} != 'Done'",
         });
         return response.records || [];
       }
-      
+
       // Get all bounties that are NOT in user's lists AND NOT globally completed
       const bountyRecordsQuery = userBountyIds
         .map((id: string) => `RECORD_ID()="${id}"`)
         .join(',');
-      
+
       const response = await airtableClient.getRecords('Bounties', {
-        filterByFormula: `AND({Status} != 'Done', NOT(OR(${bountyRecordsQuery})))`
+        filterByFormula: `AND({Status} != 'Done', NOT(OR(${bountyRecordsQuery})))`,
       });
-      
+
       return response.records || [];
     },
     enabled: !!userId,

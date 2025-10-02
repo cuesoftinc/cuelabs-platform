@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ExternalLink, 
-  Users, 
-  Calendar, 
-  DollarSign, 
+import {
+  ExternalLink,
+  Users,
+  Calendar,
+  DollarSign,
   Eye,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 import { useBountySubmissions } from '@/hooks/queries/useAdmin';
 import { formatDateToDayMonthYear } from '@/lib/utils';
@@ -25,7 +25,8 @@ interface BountyManagementProps {
 
 function BountyManagement({ bounty }: BountyManagementProps) {
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const { data: submissions, isLoading: isLoadingSubmissions } = useBountySubmissions(bounty.id);
+  const { data: submissions, isLoading: isLoadingSubmissions } =
+    useBountySubmissions(bounty.id);
 
   const fields = bounty.fields;
   const participantCount = fields?.Participants?.length || 0;
@@ -62,12 +63,19 @@ function BountyManagement({ bounty }: BountyManagementProps) {
   };
 
   const submissionList = submissions as Submission[] | undefined;
-  const pendingSubmissions = submissionList?.filter((sub: Submission) => {
-    const status = sub.fields.Status;
-    return !status || status === 'New' || status === 'Pending';
-  }) || [];
-  const acceptedSubmissions = submissionList?.filter((sub: Submission) => sub.fields.Status === 'Accepted') || [];
-  const declinedSubmissions = submissionList?.filter((sub: Submission) => sub.fields.Status === 'Declined') || [];
+  const pendingSubmissions =
+    submissionList?.filter((sub: Submission) => {
+      const status = sub.fields.Status;
+      return !status || status === 'New' || status === 'Pending';
+    }) || [];
+  const acceptedSubmissions =
+    submissionList?.filter(
+      (sub: Submission) => sub.fields.Status === 'Accepted',
+    ) || [];
+  const declinedSubmissions =
+    submissionList?.filter(
+      (sub: Submission) => sub.fields.Status === 'Declined',
+    ) || [];
 
   return (
     <Card className='card-container'>
@@ -115,7 +123,9 @@ function BountyManagement({ bounty }: BountyManagementProps) {
           </div>
           <div className='flex items-center gap-2 text-auth-text text-sm'>
             <Calendar className='w-4 h-4' />
-            <span>{dueDate ? formatDateToDayMonthYear(dueDate) : 'No due date'}</span>
+            <span>
+              {dueDate ? formatDateToDayMonthYear(dueDate) : 'No due date'}
+            </span>
           </div>
           <div className='flex items-center gap-2 text-auth-text text-sm'>
             <Eye className='w-4 h-4' />
@@ -149,14 +159,17 @@ function BountyManagement({ bounty }: BountyManagementProps) {
 
             {isLoadingSubmissions ? (
               <div className='text-center py-4'>
-                <div className='text-auth-text text-sm'>Loading submissions...</div>
+                <div className='text-auth-text text-sm'>
+                  Loading submissions...
+                </div>
               </div>
             ) : submissionList && submissionList.length > 0 ? (
               <div className='space-y-3'>
                 {submissionList.map((submission: Submission) => {
                   const status = submission.fields.Status;
-                  const isPending = !status || status === 'New' || status === 'Pending';
-                  
+                  const isPending =
+                    !status || status === 'New' || status === 'Pending';
+
                   // Use SubmissionReview component for pending submissions
                   if (isPending) {
                     return (
@@ -169,7 +182,7 @@ function BountyManagement({ bounty }: BountyManagementProps) {
                       />
                     );
                   }
-                  
+
                   // Show summary for non-pending submissions
                   return (
                     <div

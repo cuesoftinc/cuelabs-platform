@@ -31,7 +31,7 @@ function ItemCard({
     mainImage?.thumbnails?.small?.url;
 
   // Check if this item is in the cart
-  const isInCart = items.some(cartItem => cartItem.item.id === item.id);
+  const isInCart = items.some((cartItem) => cartItem.item.id === item.id);
 
   // Reset error state when item data changes (new URLs)
   useEffect(() => {
@@ -40,10 +40,12 @@ function ItemCard({
   }, [item.fields.Attachments]);
 
   const handleAddToCart = () => {
-    dispatch(addToCart({
-      item,
-      quantity: 1,
-    }));
+    dispatch(
+      addToCart({
+        item,
+        quantity: 1,
+      }),
+    );
   };
 
   const handlePlaceOrder = () => {
@@ -54,10 +56,13 @@ function ItemCard({
   const handleImageError = () => {
     if (retryCount < maxRetries) {
       // Retry after a short delay
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        setImageError(false); // Reset to try again
-      }, 1000 * (retryCount + 1)); // Exponential backoff: 1s, 2s
+      setTimeout(
+        () => {
+          setRetryCount((prev) => prev + 1);
+          setImageError(false); // Reset to try again
+        },
+        1000 * (retryCount + 1),
+      ); // Exponential backoff: 1s, 2s
     } else {
       setImageError(true);
     }
@@ -80,7 +85,9 @@ function ItemCard({
           ) : (
             <div className='relative bottom-10 w-full h-[200px] bg-[#1F1F1F] rounded-[8px] flex items-center justify-center'>
               <span className='text-auth-text text-sm'>
-                {retryCount > 0 && retryCount < maxRetries ? 'Retrying...' : 'No Image'}
+                {retryCount > 0 && retryCount < maxRetries
+                  ? 'Retrying...'
+                  : 'No Image'}
               </span>
             </div>
           )}
@@ -115,7 +122,7 @@ function ItemCard({
 
           {btnType === 'main' ? (
             <div className='flex flex-row lg:flex-col xl:flex-row justify-between gap-2 mt-4'>
-              <Button 
+              <Button
                 onClick={handleAddToCart}
                 className={`text-xs lg:text-[16px] w-[45%] lg:w-full xl:w-[45%] min-w-[100px] btn-main-p ${
                   isInCart ? 'opacity-50 cursor-not-allowed' : ''
@@ -126,7 +133,7 @@ function ItemCard({
               </Button>
 
               <div className='p-[2px] rounded-[4px] bg-gradient-to-r from-[#CB39C1] via-[#B91F7A] to-[#3534FF] w-[45%] lg:w-full xl:w-[45%] min-w-[90px]'>
-                <button 
+                <button
                   onClick={handlePlaceOrder}
                   className='block h-full w-full font-medium border-none rounded-[3px] cursor-pointer hover:scale-[0.97] text-center py-1.5 bg-[#0F0F0F]'
                 >

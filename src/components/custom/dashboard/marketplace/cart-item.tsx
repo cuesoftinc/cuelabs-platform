@@ -30,28 +30,37 @@ function CartItemComponent({ cartItem }: CartItemProps) {
   }, [cartItem.item.fields.Attachments]);
 
   const handleQuantityChange = (increment: boolean) => {
-    const newQuantity = increment ? cartItem.quantity + 1 : Math.max(1, cartItem.quantity - 1);
-    dispatch(updateQuantity({
-      itemId: cartItem.item.id,
-      quantity: newQuantity,
-      selectedSize: cartItem.selectedSize,
-    }));
+    const newQuantity = increment
+      ? cartItem.quantity + 1
+      : Math.max(1, cartItem.quantity - 1);
+    dispatch(
+      updateQuantity({
+        itemId: cartItem.item.id,
+        quantity: newQuantity,
+        selectedSize: cartItem.selectedSize,
+      }),
+    );
   };
 
   const handleRemove = () => {
-    dispatch(removeFromCart({
-      itemId: cartItem.item.id,
-      selectedSize: cartItem.selectedSize,
-    }));
+    dispatch(
+      removeFromCart({
+        itemId: cartItem.item.id,
+        selectedSize: cartItem.selectedSize,
+      }),
+    );
   };
 
   const handleImageError = () => {
     if (retryCount < maxRetries) {
       // Retry after a short delay
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        setImageError(false); // Reset to try again
-      }, 1000 * (retryCount + 1)); // Exponential backoff: 1s, 2s
+      setTimeout(
+        () => {
+          setRetryCount((prev) => prev + 1);
+          setImageError(false); // Reset to try again
+        },
+        1000 * (retryCount + 1),
+      ); // Exponential backoff: 1s, 2s
     } else {
       setImageError(true);
     }
@@ -74,7 +83,9 @@ function CartItemComponent({ cartItem }: CartItemProps) {
         ) : (
           <div className='w-full h-full bg-[#1F1F1F] rounded-[8px] flex items-center justify-center'>
             <span className='text-auth-text text-xs'>
-              {retryCount > 0 && retryCount < maxRetries ? 'Retrying...' : 'No Image'}
+              {retryCount > 0 && retryCount < maxRetries
+                ? 'Retrying...'
+                : 'No Image'}
             </span>
           </div>
         )}
@@ -105,11 +116,11 @@ function CartItemComponent({ cartItem }: CartItemProps) {
         >
           <Minus className='w-3 h-3' />
         </Button>
-        
+
         <span className='text-white text-sm min-w-[2rem] text-center'>
           {cartItem.quantity}
         </span>
-        
+
         <Button
           variant='outline'
           size='sm'
@@ -138,4 +149,4 @@ function CartItemComponent({ cartItem }: CartItemProps) {
   );
 }
 
-export default CartItemComponent; 
+export default CartItemComponent;

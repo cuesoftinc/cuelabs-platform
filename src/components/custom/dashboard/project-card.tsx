@@ -25,7 +25,7 @@ function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Card 
+    <Card
       className='card-container p-0 w-full h-full flex flex-col cursor-pointer hover:opacity-80 transition-opacity'
       onClick={handleCardClick}
     >

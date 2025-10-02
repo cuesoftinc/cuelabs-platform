@@ -20,7 +20,7 @@ export const useUserEarnings = (userId: string) => {
     queryKey: ['earnings', userId],
     queryFn: async () => {
       const response = await airtableClient.getRecords('Earnings', {
-        filterByFormula: `{User} = "${userId}"`
+        filterByFormula: `{User} = "${userId}"`,
       });
       return response.records as Earning[];
     },
@@ -35,7 +35,7 @@ export const useEarningsByPeriod = (startDate: string, endDate: string) => {
     queryKey: ['earnings', 'period', startDate, endDate],
     queryFn: async () => {
       const response = await airtableClient.getRecords('Earnings', {
-        filterByFormula: `AND(IS_SAME({Created At}, "${startDate}", 'day'), IS_SAME({Created At}, "${endDate}", 'day'))`
+        filterByFormula: `AND(IS_SAME({Created At}, "${startDate}", 'day'), IS_SAME({Created At}, "${endDate}", 'day'))`,
       });
       return response.records as Earning[];
     },

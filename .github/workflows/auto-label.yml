@@ -10,6 +10,9 @@ jobs:
   label-issues:
     runs-on: ubuntu-latest
     if: github.event_name == 'issues'
+    permissions:
+      issues: write
+      contents: read
 
     steps:
       - name: Label bug reports
@@ -51,6 +54,9 @@ jobs:
   label-prs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout code

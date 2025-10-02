@@ -19,20 +19,21 @@ const statusOptions = [
 function StatusFilter({ value, onValueChange }: StatusFilterProps) {
   const [open, setOpen] = useState(false);
 
-  const selectedOption = statusOptions.find(option => option.value === value) || statusOptions[0];
+  const selectedOption =
+    statusOptions.find((option) => option.value === value) || statusOptions[0];
 
   return (
-    <div className="relative">
+    <div className='relative'>
       <button
         onClick={() => setOpen(!open)}
-        className="border border-[#1F1F1F] flex items-center md:gap-2 p-1 md:p-[9px] shadow-[1px_1px_1px_0px_#1F1F1F66] bg-darkmode-bg rounded-[4px] text-dashboard-nav text-[10px] font-medium hover:bg-[#1f1f1f]"
+        className='border border-[#1F1F1F] flex items-center md:gap-2 p-1 md:p-[9px] shadow-[1px_1px_1px_0px_#1F1F1F66] bg-darkmode-bg rounded-[4px] text-dashboard-nav text-[10px] font-medium hover:bg-[#1f1f1f]'
       >
         <span>{selectedOption.label}</span>
-        <ChevronDown className="w-3 h-3" />
+        <ChevronDown className='w-3 h-3' />
       </button>
-      
+
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-darkmode-bg border border-auth-border rounded-[4px] shadow-lg z-10 min-w-[150px]">
+        <div className='absolute top-full left-0 mt-1 bg-darkmode-bg border border-auth-border rounded-[4px] shadow-lg z-10 min-w-[150px]'>
           {statusOptions.map((option) => (
             <button
               key={option.value}

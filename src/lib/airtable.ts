@@ -78,13 +78,10 @@ class AirtableClient {
     tableName: string,
     fields: T,
   ): Promise<AirtableRecord<T>> {
-    const result = await this.request<AirtableRecord<T>>(
-      `/${tableName}`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ fields }),
-      },
-    );
+    const result = await this.request<AirtableRecord<T>>(`/${tableName}`, {
+      method: 'POST',
+      body: JSON.stringify({ fields }),
+    });
 
     return result;
   }
@@ -94,13 +91,10 @@ class AirtableClient {
     recordId: string,
     fields: T,
   ): Promise<AirtableRecord<T>> {
-    return this.request<AirtableRecord<T>>(
-      `/${tableName}/${recordId}`,
-      {
-        method: 'PATCH',
-        body: JSON.stringify({ fields }),
-      },
-    );
+    return this.request<AirtableRecord<T>>(`/${tableName}/${recordId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ fields }),
+    });
   }
 
   async deleteRecord(

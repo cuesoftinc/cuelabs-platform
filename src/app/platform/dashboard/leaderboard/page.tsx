@@ -121,7 +121,7 @@ function LeaderboardPage() {
                 <span className=''>Wallet Balance</span>
               </div>
 
-            
+
               <div className='flex items-center gap-1  mt-4'>
                 <Image
                   src={cueCurrency}
@@ -132,7 +132,7 @@ function LeaderboardPage() {
                   {currentUser?.fields['Wallet Balance']?.toLocaleString() || '0'}
                 </span>
               </div>
-            
+
             </CardContent>
           </Card>
 

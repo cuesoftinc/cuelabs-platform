@@ -13,50 +13,52 @@ function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { setCurrentUser } = useAuth();
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
-  const handleUserSession = useCallback(async (session: { user?: { id?: string } }) => {
-    if (isProcessing) return;
-    setIsProcessing(true);
+  const handleUserSession = useCallback(
+    async (session: { user?: { id?: string } }) => {
+      if (isProcessing) return;
+      setIsProcessing(true);
 
-    try {
-      // Validate session has required data
-      if (!session?.user?.id) {
+      try {
+        // Validate session has required data
+        if (!session?.user?.id) {
+          await signOut({ redirect: false });
+          return;
+        }
+
+        // Fetch user from Airtable using the ID from session
+        const response = await fetch(`/api/users/${session.user.id}`);
+
+        if (!response.ok) {
+          await signOut({ redirect: false });
+          return;
+        }
+
+        const userData = await response.json();
+
+        // Set user in Redux
+        setCurrentUser(userData);
+
+        // Redirect to dashboard
+        router.push('/platform/dashboard');
+      } catch (error) {
+        console.error('Error processing user session:', error);
+
+        // Clear the session on any error and allow fresh login
         await signOut({ redirect: false });
-        return;
+      } finally {
+        setIsProcessing(false);
       }
-
-      // Fetch user from Airtable using the ID from session
-      const response = await fetch(`/api/users/${session.user.id}`);
-      
-      if (!response.ok) {
-        await signOut({ redirect: false });
-        return;
-      }
-
-      const userData = await response.json();
-      
-      // Set user in Redux
-      setCurrentUser(userData);
-      
-      // Redirect to dashboard
-      router.push('/platform/dashboard');
-      
-    } catch (error) {
-      console.error('Error processing user session:', error);
-      
-      // Clear the session on any error and allow fresh login
-      await signOut({ redirect: false });
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [isProcessing, setCurrentUser, router]);
+    },
+    [isProcessing, setCurrentUser, router],
+  );
 
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     // Only process session if user has a valid Airtable ID
     if (session?.user?.id) {
       handleUserSession(session);

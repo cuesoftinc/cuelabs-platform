@@ -11,8 +11,12 @@ import { Submission } from '@/types/submissions';
 function AdminSubmissionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const { data: allSubmissions, isLoading: isLoadingAll, error: allError } = useAllSubmissions();
-  
+  const {
+    data: allSubmissions,
+    isLoading: isLoadingAll,
+    error: allError,
+  } = useAllSubmissions();
+
   // Use all submissions for comprehensive view
   const submissions = allSubmissions;
   const isLoading = isLoadingAll;
@@ -21,9 +25,9 @@ function AdminSubmissionsPage() {
   // Filter submissions based on search term and status
   const filteredSubmissions = useMemo(() => {
     if (!submissions) return [];
-    
+
     let filtered = submissions as Submission[];
-    
+
     // Filter by status
     if (statusFilter !== 'all') {
       filtered = filtered.filter((submission: Submission) => {
@@ -32,11 +36,12 @@ function AdminSubmissionsPage() {
           return !status || status === 'New' || status === 'Pending';
         }
         // Handle case mismatch: filter uses lowercase, data uses capitalized
-        const capitalizedFilter = statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
+        const capitalizedFilter =
+          statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
         return status === capitalizedFilter;
       });
     }
-    
+
     // Filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
@@ -45,21 +50,23 @@ function AdminSubmissionsPage() {
         const comments = submission.fields.Comment?.toLowerCase() || '';
         const userId = submission.fields.User?.[0]?.toLowerCase() || '';
         const bountyId = submission.fields.Bounties?.[0]?.toLowerCase() || '';
-        
-        return url.includes(searchLower) || 
-               comments.includes(searchLower) || 
-               userId.includes(searchLower) || 
-               bountyId.includes(searchLower);
+
+        return (
+          url.includes(searchLower) ||
+          comments.includes(searchLower) ||
+          userId.includes(searchLower) ||
+          bountyId.includes(searchLower)
+        );
       });
     }
-    
+
     return filtered;
   }, [submissions, searchTerm, statusFilter]);
 
   // Get status counts for filter buttons
   const statusCounts = useMemo(() => {
     if (!submissions) return { all: 0, pending: 0, accepted: 0, declined: 0 };
-    
+
     const submissionList = submissions as Submission[];
     return {
       all: submissionList.length,
@@ -67,8 +74,12 @@ function AdminSubmissionsPage() {
         const status = s.fields.Status;
         return !status || status === 'New' || status === 'Pending';
       }).length,
-      accepted: submissionList.filter((s: Submission) => s.fields.Status === 'Accepted').length,
-      declined: submissionList.filter((s: Submission) => s.fields.Status === 'Declined').length,
+      accepted: submissionList.filter(
+        (s: Submission) => s.fields.Status === 'Accepted',
+      ).length,
+      declined: submissionList.filter(
+        (s: Submission) => s.fields.Status === 'Declined',
+      ).length,
     };
   }, [submissions]);
 
@@ -83,7 +94,9 @@ function AdminSubmissionsPage() {
   if (error) {
     return (
       <div className='text-center py-12'>
-        <div className='text-red-500 text-lg mb-2'>Error Loading Submissions</div>
+        <div className='text-red-500 text-lg mb-2'>
+          Error Loading Submissions
+        </div>
         <p className='text-auth-text text-sm'>{error.message}</p>
       </div>
     );
@@ -92,7 +105,9 @@ function AdminSubmissionsPage() {
   return (
     <div>
       <div className='mb-8'>
-        <h1 className='text-2xl font-bold text-white mb-2'>Submissions Management</h1>
+        <h1 className='text-2xl font-bold text-white mb-2'>
+          Submissions Management
+        </h1>
         <p className='text-auth-text text-sm'>
           Review and manage all bounty submissions
         </p>
@@ -124,14 +139,18 @@ function AdminSubmissionsPage() {
                   : 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
               }`}
             >
-              {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)} ({count})
+              {status === 'all'
+                ? 'All'
+                : status.charAt(0).toUpperCase() + status.slice(1)}{' '}
+              ({count})
             </button>
           ))}
         </div>
 
         {/* Results Count */}
         <div className='text-auth-text text-sm'>
-          Showing {filteredSubmissions.length} of {submissions?.length || 0} submissions
+          Showing {filteredSubmissions.length} of {submissions?.length || 0}{' '}
+          submissions
         </div>
       </div>
 
@@ -152,16 +171,14 @@ function AdminSubmissionsPage() {
         <div className='bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-12'>
           <div className='text-center'>
             <div className='text-auth-text text-lg mb-2'>
-              {searchTerm || statusFilter !== 'all' 
-                ? 'No matching submissions found' 
-                : 'No submissions found'
-              }
+              {searchTerm || statusFilter !== 'all'
+                ? 'No matching submissions found'
+                : 'No submissions found'}
             </div>
             <p className='text-auth-text text-sm'>
               {searchTerm || statusFilter !== 'all'
                 ? 'Try adjusting your search terms or filters'
-                : 'There are no submissions in the system yet'
-              }
+                : 'There are no submissions in the system yet'}
             </p>
           </div>
         </div>

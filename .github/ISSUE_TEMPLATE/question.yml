@@ -1,0 +1,85 @@
+name: Question
+description: Ask a question about CueLABS™
+title: '[Question]: '
+labels: ['question', 'needs-triage']
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your question! Please provide as much context as possible to help us give you the best answer.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What's your question?
+      description: Please be as specific as possible about what you'd like to know.
+      placeholder: I would like to understand...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: question-category
+    attributes:
+      label: What category does your question relate to?
+      options:
+        - Getting Started / Setup
+        - Authentication
+        - Bounty System
+        - Marketplace
+        - API Usage
+        - Contributing
+        - Deployment
+        - Troubleshooting
+        - General Usage
+        - Other
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context about your situation, what you're trying to achieve, or what you've already tried.
+      placeholder: |
+        I'm trying to...
+        I've already looked at...
+        My goal is to...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: If your question is technical, please provide environment details
+      placeholder: |
+        - OS: [e.g. macOS 14.0, Windows 11, Ubuntu 22.04]
+        - Node.js version: [e.g. 22.20.0]
+        - Browser: [e.g. Chrome 119.0.6045.105]
+
+  - type: textarea
+    id: attempted-solutions
+    attributes:
+      label: What have you tried?
+      description: Let us know what you've already attempted or researched
+      placeholder: |
+        I've tried:
+        - Looking at the documentation
+        - Searching existing issues
+        - Checking the FAQ
+
+  - type: checkboxes
+    id: research
+    attributes:
+      label: Research checklist
+      description: Please confirm you've done some basic research first
+      options:
+        - label: I have searched the existing issues
+        - label: I have checked the documentation
+        - label: I have looked at the README and setup guides
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

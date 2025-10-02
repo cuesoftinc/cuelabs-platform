@@ -3,8 +3,20 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, CheckCircle, XCircle, User, Calendar, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
-import { useApproveSubmission, useDeclineSubmission } from '@/hooks/queries/useAdmin';
+import {
+  ExternalLink,
+  CheckCircle,
+  XCircle,
+  User,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  MessageSquare,
+} from 'lucide-react';
+import {
+  useApproveSubmission,
+  useDeclineSubmission,
+} from '@/hooks/queries/useAdmin';
 import { useUser } from '@/hooks/queries/useUsers';
 import { Submission } from '@/types/submissions';
 
@@ -13,12 +25,15 @@ interface SubmissionReviewProps {
   onActionComplete?: () => void;
 }
 
-function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProps) {
+function SubmissionReview({
+  submission,
+  onActionComplete,
+}: SubmissionReviewProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const approveSubmission = useApproveSubmission();
   const declineSubmission = useDeclineSubmission();
-  
+
   // Fetch user data to get the name
   const userId = submission.fields.User?.[0];
   const { data: userData, isLoading: isLoadingUser } = useUser(userId || '');
@@ -60,9 +75,10 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
   const comments = submission.fields.Comment;
   const createdAt = submission.fields['Created At'];
   const submissionStatus = submission.fields.Status;
-  
+
   // Check if submission has already been processed
-  const isProcessed = submissionStatus === 'Accepted' || submissionStatus === 'Declined';
+  const isProcessed =
+    submissionStatus === 'Accepted' || submissionStatus === 'Declined';
 
   // Get status badge styling
   const getStatusBadge = () => {
@@ -96,9 +112,11 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
               <span>{new Date(createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-          
+
           <div className='flex items-center gap-2'>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadge()}`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadge()}`}
+            >
               {submissionStatus || 'Pending'}
             </span>
             <button
@@ -132,7 +150,9 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
           <div className='flex items-center gap-2 mb-3'>
             <MessageSquare className='w-4 h-4 text-auth-text flex-shrink-0' />
             <span className='text-auth-text text-sm truncate flex-1'>
-              {comments.length > 100 ? `${comments.substring(0, 100)}...` : comments}
+              {comments.length > 100
+                ? `${comments.substring(0, 100)}...`
+                : comments}
             </span>
           </div>
         )}
@@ -147,7 +167,9 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
                   Full Comments
                 </label>
                 <div className='p-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg'>
-                  <p className='text-white text-sm whitespace-pre-wrap'>{comments}</p>
+                  <p className='text-white text-sm whitespace-pre-wrap'>
+                    {comments}
+                  </p>
                 </div>
               </div>
             )}
@@ -166,7 +188,9 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
               </div>
               <div className='flex items-center gap-2 text-auth-text text-sm'>
                 <Calendar className='w-4 h-4' />
-                <span>Submitted: {new Date(createdAt).toLocaleDateString()}</span>
+                <span>
+                  Submitted: {new Date(createdAt).toLocaleDateString()}
+                </span>
               </div>
             </div>
 
@@ -174,11 +198,13 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
             <div className='flex gap-3 pt-4 border-t border-[#2A2A2A]'>
               {isProcessed ? (
                 <div className='flex-1 text-center py-3'>
-                  <div className={`flex items-center justify-center gap-2 ${
-                    submissionStatus === 'Accepted' 
-                      ? 'text-green-400' 
-                      : 'text-red-400'
-                  }`}>
+                  <div
+                    className={`flex items-center justify-center gap-2 ${
+                      submissionStatus === 'Accepted'
+                        ? 'text-green-400'
+                        : 'text-red-400'
+                    }`}
+                  >
                     {submissionStatus === 'Accepted' ? (
                       <>
                         <CheckCircle className='w-4 h-4' />
@@ -211,7 +237,7 @@ function SubmissionReview({ submission, onActionComplete }: SubmissionReviewProp
                       </div>
                     )}
                   </Button>
-                  
+
                   <Button
                     onClick={handleDecline}
                     disabled={isProcessing}

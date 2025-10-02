@@ -26,15 +26,17 @@ function AdminSidebar({ className = '' }: AdminSidebarProps) {
   ];
 
   return (
-    <div className={`bg-[#0A0A0A] border-r border-[#1F1F1F] w-64 min-h-screen ${className}`}>
+    <div
+      className={`bg-[#0A0A0A] border-r border-[#1F1F1F] w-64 min-h-screen ${className}`}
+    >
       <div className='p-6'>
         <h2 className='text-white text-lg font-semibold mb-8'>Admin Panel</h2>
-        
+
         <nav className='space-y-2'>
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            
+
             return (
               <Link
                 key={item.name}

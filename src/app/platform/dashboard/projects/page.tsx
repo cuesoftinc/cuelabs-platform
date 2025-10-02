@@ -42,7 +42,7 @@ import CustomSpinner from '@/components/custom/custom-spinner';
 function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  
+
   const { data: projectsData, isLoading } = useFetchProjects();
 
   // Calculate project statistics
@@ -51,29 +51,32 @@ function ProjectsPage() {
       return { total: 0, inProgress: 0, completed: 0, new: 0, todo: 0 };
     }
 
-    const stats = projectsData.records.reduce((acc, project) => {
-      acc.total++;
-      const status = project.fields.Status;
-      
-      switch (status) {
-        case 'In progress':
-          acc.inProgress++;
-          break;
-        case 'Done':
-          acc.completed++;
-          break;
-        case 'New':
-          acc.new++;
-          break;
-        case 'Todo':
-          acc.todo++;
-          break;
-        default:
-          break;
-      }
-      
-      return acc;
-    }, { total: 0, inProgress: 0, completed: 0, new: 0, todo: 0 });
+    const stats = projectsData.records.reduce(
+      (acc, project) => {
+        acc.total++;
+        const status = project.fields.Status;
+
+        switch (status) {
+          case 'In progress':
+            acc.inProgress++;
+            break;
+          case 'Done':
+            acc.completed++;
+            break;
+          case 'New':
+            acc.new++;
+            break;
+          case 'Todo':
+            acc.todo++;
+            break;
+          default:
+            break;
+        }
+
+        return acc;
+      },
+      { total: 0, inProgress: 0, completed: 0, new: 0, todo: 0 },
+    );
 
     return stats;
   }, [projectsData]);
@@ -86,15 +89,22 @@ function ProjectsPage() {
 
     // Apply search filter
     if (searchQuery.trim()) {
-      filtered = filtered.filter(project =>
-        project.fields.Name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.fields.Description?.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (project) =>
+          project.fields.Name?.toLowerCase().includes(
+            searchQuery.toLowerCase(),
+          ) ||
+          project.fields.Description?.toLowerCase().includes(
+            searchQuery.toLowerCase(),
+          ),
       );
     }
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(project => project.fields.Status === statusFilter);
+      filtered = filtered.filter(
+        (project) => project.fields.Status === statusFilter,
+      );
     }
 
     return filtered;
@@ -175,9 +185,9 @@ function ProjectsPage() {
           </div>
 
           <div className='flex items-center gap-4 md:justify-between md:w-[30%] xl:w-[20%]'>
-            <StatusFilter 
-              value={statusFilter} 
-              onValueChange={setStatusFilter} 
+            <StatusFilter
+              value={statusFilter}
+              onValueChange={setStatusFilter}
             />
 
             <CustomSelectFilter>

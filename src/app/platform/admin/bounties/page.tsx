@@ -16,7 +16,7 @@ function AdminBountiesPage() {
   // Filter bounties based on search term and status
   const filteredBounties = useMemo(() => {
     if (!allBounties) return [];
-    
+
     let filtered = allBounties as Bounty[];
 
     // Filter by status
@@ -48,7 +48,7 @@ function AdminBountiesPage() {
   // Get status counts for filter buttons
   const statusCounts = useMemo(() => {
     if (!allBounties) return { all: 0, New: 0, 'In progress': 0, Done: 0 };
-    
+
     const bounties = allBounties as Bounty[];
     return {
       all: bounties.length,

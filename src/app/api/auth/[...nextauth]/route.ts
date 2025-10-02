@@ -5,27 +5,26 @@ import AppleProvider from 'next-auth/providers/apple';
 import { airtableClient } from '@/lib/airtable';
 
 // Extend the NextAuth types to include our custom fields
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
       id?: string;
       name?: string | null;
       email?: string | null;
       image?: string | null;
-    }
+    };
   }
-  
+
   interface User {
     id?: string;
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT {
     airtableUserId?: string;
   }
 }
-
 
 const handler = NextAuth({
   providers: [
@@ -65,13 +64,13 @@ const handler = NextAuth({
             'Wallet Balance': 0,
             'Total Earnings': 0,
           });
-          
+
           // Store the new user ID for later use
           user.id = newUser.id;
         } else {
           // Update existing user's last login
           const existingUser = existingUsers.records[0];
-          
+
           // Store the existing user ID
           user.id = existingUser.id;
         }

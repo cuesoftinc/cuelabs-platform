@@ -17,11 +17,14 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <PersistGate loading={
-          <div className='flex items-center justify-center h-screen bg-darkmode-bg'>
-            <CustomSpinner />
-          </div>
-        } persistor={persistor}>
+        <PersistGate
+          loading={
+            <div className='flex items-center justify-center h-screen bg-darkmode-bg'>
+              <CustomSpinner />
+            </div>
+          }
+          persistor={persistor}
+        >
           <QueryClientProvider client={queryClient}>
             {children}
             <ReactQueryDevtools initialIsOpen={false} />

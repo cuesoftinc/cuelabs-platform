@@ -131,12 +131,12 @@ function OrderHistory() {
             ) : (
               orders.map((order, idx) => (
                 <React.Fragment key={order.id}>
-              <TableRow
+                  <TableRow
                     className={`font-medium text-[10px] leading-14px hover:bg-[#1f1f1f]/50 cursor-pointer ${idx % 2 === 0 ? 'bg-[#0F0F0F]' : ''}`}
                     onClick={() => toggleOrderExpansion(order.id)}
-              >
-                <TableCell className='px-8'>
-                  <div className='flex items-center gap-2'>
+                  >
+                    <TableCell className='px-8'>
+                      <div className='flex items-center gap-2'>
                         <div className='w-4 h-4 flex items-center justify-center'>
                           <div
                             className={`w-2 h-2 border-l-2 border-b-2 border-white transform transition-transform duration-200 ${
@@ -154,54 +154,54 @@ function OrderHistory() {
                             {order.itemsCount} items
                           </p>
                         </div>
-                  </div>
-                </TableCell>
-                <TableCell className='px-8'>
-                  <div className='text-white font-medium text-sm flex items-center gap-1'>
-                    <Image
-                      src={CueCurrencyIcon}
-                      alt='cue currency icon'
-                      width={12}
-                      height={12}
-                    />
+                      </div>
+                    </TableCell>
+                    <TableCell className='px-8'>
+                      <div className='text-white font-medium text-sm flex items-center gap-1'>
+                        <Image
+                          src={CueCurrencyIcon}
+                          alt='cue currency icon'
+                          width={12}
+                          height={12}
+                        />
                         <span>{order.totalAmount.toLocaleString()}</span>
-                  </div>
-                </TableCell>
-                <TableCell className='px-8'>
-                  <div
-                    className={`${
+                      </div>
+                    </TableCell>
+                    <TableCell className='px-8'>
+                      <div
+                        className={`${
                           order.status === 'Pending'
-                        ? 'inactive-status'
+                            ? 'inactive-status'
                             : order.status === 'Canceled'
-                          ? 'canceled-status'
+                              ? 'canceled-status'
                               : order.status === 'Delivered'
                                 ? 'active-status'
-                          : 'active-status'
-                    } w-fit`}
-                  >
+                                : 'active-status'
+                        } w-fit`}
+                      >
                         {order.status === 'Delivered' ? (
-                      <div className='flex items-center gap-1'>
-                        <div className='w-[3px] h-[3px] bg-[#05C168] rounded-full inline-block' />
+                          <div className='flex items-center gap-1'>
+                            <div className='w-[3px] h-[3px] bg-[#05C168] rounded-full inline-block' />
                             <span>Delivered</span>
-                      </div>
+                          </div>
                         ) : order.status === 'Pending' ? (
-                      <div className='flex items-center gap-1'>
-                        <div className='w-[3px] h-[3px] bg-[#FDB52A] rounded-full inline-block' />
-                        <span>Pending</span>
-                      </div>
+                          <div className='flex items-center gap-1'>
+                            <div className='w-[3px] h-[3px] bg-[#FDB52A] rounded-full inline-block' />
+                            <span>Pending</span>
+                          </div>
                         ) : order.status === 'Canceled' ? (
-                      <div className='flex items-center gap-1'>
-                        <div className='w-[3px] h-[3px] bg-[#FF5A5F] rounded-full inline-block' />
-                        <span>Canceled</span>
-                      </div>
-                    ) : (
-                      <div className='flex items-center gap-1'>
+                          <div className='flex items-center gap-1'>
+                            <div className='w-[3px] h-[3px] bg-[#FF5A5F] rounded-full inline-block' />
+                            <span>Canceled</span>
+                          </div>
+                        ) : (
+                          <div className='flex items-center gap-1'>
                             <div className='w-[3px] h-[3px] bg-[#05C168] rounded-full inline-block' />
                             <span>{order.status}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </TableCell>
+                    </TableCell>
                     <TableCell className='px-8'>
                       <span>{formatDate(order.date)}</span>
                     </TableCell>
@@ -273,8 +273,8 @@ function OrderHistory() {
                             )}
                           </div>
                         </div>
-                </TableCell>
-              </TableRow>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </React.Fragment>
               ))
